@@ -1,0 +1,48 @@
+<resources>
+
+    <!-- Base application theme.
+        https://developer.android.com/training/basics/actionbar/styling.html
+        AndroidManifest.xml specifies AppTheme -->
+<!-- Styles and themes http://developer.android.com/guide/topics/ui/themes.html -->
+<!-- Styling the action bar http://developer.android.com/guide/topics/ui/actionbar.html#Style -->
+<!-- List of attributes http://developer.android.com/reference/android/R.attr.html -->
+<!-- Holo theme dfn 
+https://android.googlesource.com/platform/frameworks/base/+/refs/heads/master/core/res/res/values/styles.xml 
+https://android.googlesource.com/platform/frameworks/base/+/refs/heads/master/core/res/res/values/themes.xml
+style generator http://jgilfelt.github.io/android-actionbarstylegenerator/
+https://developer.android.com/training/basics/actionbar/styling.html#CustomTabs
+-->
+
+
+    <!-- them gets chosen in AndroidManifest.xml -->
+    <!--<style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">-->
+    <style name="AppTheme" parent="Theme.AppCompat.Light">
+        <item name="actionBarTabStyle">@style/PetesTabView</item>
+        <item name="actionBarTabBarStyle">@style/Petes_tabs</item>
+        <item name="actionBarTabTextStyle">@style/AppTheme.ActionBar.TabText</item>
+    </style>
+
+    <style name="PetesTabView" parent="android:style/Widget.Holo.ActionBar.TabView">
+        <!-- sets everything, tabs and highlights -->
+        <!-- "tabstyles" is a file with a list of colors for each tab state-->
+        <item name="android:background">@drawable/tabstyles</item>
+        <!--<item name="android:backgroundStacked">@color/petes_green</item>-->
+    </style>
+
+    <style name="Petes_tabs" parent="android:style/Widget.Holo.Light.ActionBar.TabBar">
+        <!-- Sets the main tab color-->
+        <item name="android:background">@color/petes_yellow</item>
+    </style>
+
+    <style name="AppTheme.ActionBar.TabText" parent="android:style/Widget.Holo.ActionBar.TabText">
+        <!--<item name="android:textColor">@color/petes_red</item>-->
+        <item name="android:textAllCaps">false</item>
+        <!--<item name="android:background">@color/petes_green</item>-->
+    </style>
+
+    <color name="petes_light_blue">#b0b0ff</color>
+    <color name="petes_yellow">#fffffb46</color>
+    <color name="petes_red">#ffff3d35</color>
+    <color name="petes_green">#ff66ff3b</color>
+
+</resources>
