@@ -16,7 +16,7 @@ public class DeletionLogActivity extends ActionBarActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_deletion_log);
         ListView listView = (ListView) findViewById(R.id.deletion_log);
-        arrayAdapter = new DeleteLogAdapter(this, R.layout.delete_log_row_layout, MainTabActivity.sTheMainActivity.deleteLog);
+        arrayAdapter = new DeleteLogAdapter(this, R.layout.delete_log_row_layout, MainTabActivity.sTheMainActivity.mDeleteLog);
         listView.setAdapter(arrayAdapter);
         View clearButton = findViewById(R.id.clear_button);
         clearButton.setOnClickListener(this);
@@ -26,7 +26,7 @@ public class DeletionLogActivity extends ActionBarActivity implements View.OnCli
     @Override
     public void onClick(View v) {
         // Responds to the "clear" button being clicked
-        MainTabActivity.sTheMainActivity.deleteLog.clear();
+        MainTabActivity.sTheMainActivity.mDeleteLog.clear();
         arrayAdapter.notifyDataSetChanged();
     }
 }

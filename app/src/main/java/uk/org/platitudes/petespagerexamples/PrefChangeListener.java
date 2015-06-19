@@ -32,7 +32,7 @@ public class PrefChangeListener implements Preference.OnPreferenceChangeListener
             }
 
             if (listPreference.getKey().equals(SettingsActivity.LOG_SIZE_KEY)) {
-                MainTabActivity.sTheMainActivity.logTextSize = Integer.valueOf(stringValue);
+                MainTabActivity.sTheMainActivity.mLogTextSize = Integer.valueOf(stringValue);
             }
 
         } else if (preference instanceof CheckBoxPreference) {

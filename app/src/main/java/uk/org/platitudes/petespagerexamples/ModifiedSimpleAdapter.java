@@ -60,8 +60,8 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
         tv1.setText(col1);
         tv2.setText(col2.toString());
 
-        tv2.setTextSize(TypedValue.COMPLEX_UNIT_SP, MainTabActivity.sTheMainActivity.textSize);
-        tv1.setTextSize(TypedValue.COMPLEX_UNIT_SP, MainTabActivity.sTheMainActivity.textSize);
+        tv2.setTextSize(TypedValue.COMPLEX_UNIT_SP, MainTabActivity.sTheMainActivity.mTextSize);
+        tv1.setTextSize(TypedValue.COMPLEX_UNIT_SP, MainTabActivity.sTheMainActivity.mTextSize);
 
         // The icon will be set to a folder by the inflater.
         // If a file, or a reused row, then change it.

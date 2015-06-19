@@ -80,7 +80,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
             long fileSize = f.length();
             long bytesWiped = 0;
 
-            MainTabActivity.sTheMainActivity.deleteLog.add("Wiping "+currentFileName+" size "+fileSize);
+            MainTabActivity.sTheMainActivity.mDeleteLog.add("Wiping "+currentFileName+" size "+fileSize);
 
             while (bytesWiped < fileSize) {
 
@@ -95,7 +95,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
                 }
                 bytesWiped += 1024;
                 if (isCancelled()) {
-                    MainTabActivity.sTheMainActivity.deleteLog.add ("Delete cancelled");
+                    MainTabActivity.sTheMainActivity.mDeleteLog.add ("Delete cancelled");
                     break;
                 }
             }
@@ -109,7 +109,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
 
         // Must be a directory
         File[] files = f.listFiles();
-        MainTabActivity.sTheMainActivity.deleteLog.add ("Entering directory "+f.getName());
+        MainTabActivity.sTheMainActivity.mDeleteLog.add ("Entering directory "+f.getName());
         for (File fileFromDirectory : files) {
 
             // We're already processing a directory. If we encounter another directory then
@@ -118,7 +118,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
             Boolean allowRecursion = sharedPref.getBoolean("allow_recursion_key", false);
             if (!allowRecursion && fileFromDirectory.isDirectory()) {
                 currentFileName = fileFromDirectory.getName();
-                MainTabActivity.sTheMainActivity.deleteLog.add("Tree wipe disabled, skipping '"+currentFileName+"'");
+                MainTabActivity.sTheMainActivity.mDeleteLog.add("Tree wipe disabled, skipping '"+currentFileName+"'");
                 continue;
             }
 
@@ -127,7 +127,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
                 break;
             }
         }
-        MainTabActivity.sTheMainActivity.deleteLog.add ("Leaving directory "+f.getName());
+        MainTabActivity.sTheMainActivity.mDeleteLog.add ("Leaving directory "+f.getName());
     }
 
     @Override

@@ -43,11 +43,11 @@ public class MainTabActivity extends ActionBarActivity {
      */
     public ViewPager                mViewPager;
     public ActionBar                mActionBar;
-    public TabListener          mTabListener;
-    static MainTabActivity sTheMainActivity;
-    public int textSize;
-    public int logTextSize;
-    public ArrayList<String> deleteLog;
+    public TabListener              mTabListener;
+    static MainTabActivity          sTheMainActivity;
+    public int                      mTextSize;
+    public int                      mLogTextSize;
+    public ArrayList<String>        mDeleteLog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +60,9 @@ public class MainTabActivity extends ActionBarActivity {
 
         if (savedInstanceState != null) {
             // data from previous incarnation
-            deleteLog = savedInstanceState.getStringArrayList("deleteLog");
+            mDeleteLog = savedInstanceState.getStringArrayList("mDeleteLog");
         } else {
-            deleteLog = new ArrayList<>();
+            mDeleteLog = new ArrayList<>();
         }
 
 
@@ -119,10 +119,10 @@ public class MainTabActivity extends ActionBarActivity {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 
         String textSizeString = sharedPref.getString("text_size_key", "25");
-        textSize = Integer.valueOf(textSizeString);
+        mTextSize = Integer.valueOf(textSizeString);
 
         textSizeString = sharedPref.getString("log_text_size_key", "15");
-        logTextSize = Integer.valueOf(textSizeString);
+        mLogTextSize = Integer.valueOf(textSizeString);
     }
 
     private void hideOrShowTabs () {
@@ -136,7 +136,7 @@ public class MainTabActivity extends ActionBarActivity {
     }
 
     public void redrawBothLists (String newtextSize) {
-        textSize = Integer.valueOf(newtextSize);
+        mTextSize = Integer.valueOf(newtextSize);
         mSectionsPagerAdapter.selectFilesFragment.resetAdapter();
         mSectionsPagerAdapter.deleteFilesFragment.resetAdapter();
     }
@@ -190,7 +190,7 @@ public class MainTabActivity extends ActionBarActivity {
         // and might not come back.
         // "In general onSaveInstanceState(Bundle) is used to save per-instance state in the
         // activity and this method is used to store global persistent data (in content providers, files, etc.)"
-        outState.putStringArrayList("deleteLog", deleteLog);
+        outState.putStringArrayList("mDeleteLog", mDeleteLog);
     }
 
     @Override

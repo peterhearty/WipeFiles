@@ -22,7 +22,7 @@ public class DeleteLogAdapter extends ArrayAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         View v = super.getView(position, convertView, parent);
         TextView tv = (TextView) v;
-        tv.setTextSize(MainTabActivity.sTheMainActivity.logTextSize);
+        tv.setTextSize(MainTabActivity.sTheMainActivity.mLogTextSize);
         if ((position & 1) == 1) {
             tv.setBackgroundColor(Color.LTGRAY);
         } else {
