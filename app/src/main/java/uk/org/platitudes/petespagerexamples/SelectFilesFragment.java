@@ -124,7 +124,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
             try {
                 title = mCurDir.getCanonicalPath().toString();
             } catch (IOException ioe) {
-               title = ioe.toString();
+                title = ioe.toString();
             }
         }
         MainTabActivity.sTheMainActivity.mActionBar.setWindowTitle(title);

@@ -1,3 +1,22 @@
+/**
+ * Delete files as a background task. Invoked by the DeleteFilesFragment when the user clicks on the
+ * "Wipe files" button and confirms with the LastChanceDialog.
+ *
+ * Note: according to /Android/Sdk/docs/reference/android/os/AsyncTask.html.
+
+ "AsyncTask is designed to be a helper class around Thread and Handler and does not constitute
+ a generic threading framework. AsyncTasks should ideally be used for short operations (a few
+ seconds at the most.) If you need to keep threads running for long periods of time, it is
+ highly recommended you use the various APIs provided by the java.util.concurrent package such
+ as Executor, ThreadPoolExecutor and FutureTask."
+
+ * Despite the above warning, AsyncTask seems to work OK for extended tasks.
+ *
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
+ * @author  Peter Hearty
+ * @date    April 2015
+ */
 package uk.org.platitudes.petespagerexamples;
 
 import android.app.ProgressDialog;
@@ -11,28 +30,32 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-/**
- * Delete files as a background task.
- */
 public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<String, Object>>, Integer, Void> implements DialogInterface.OnCancelListener {
 
-    /*
-     Note: according to file:///home/pete/Android/Sdk/docs/reference/android/os/AsyncTask.html.
-
-     "AsyncTask is designed to be a helper class around Thread and Handler and does not constitute
-     a generic threading framework. AsyncTasks should ideally be used for short operations (a few
-     seconds at the most.) If you need to keep threads running for long periods of time, it is
-     highly recommended you use the various APIs provided by the java.util.concurrent package such
-     as Executor, ThreadPoolExecutor and FutureTask."
-
+    /**
+     * android.app.ProgressDialog shows how far the file deletion has progressed.
      */
     private ProgressDialog mProgressDialog;
+
+    /*
+     * Hopefully next 2 are self explanatory.
+     */
     private long bytesLeftToWipe;
     private long maxBytesToWipe;
+
+    /**
+     * The file currently being wiped is shown in the progress dialog.
+     */
     private String currentFileName;
+
+    /**
+     * Used when testing the app to simulate time passing while files are pretended to be deleted.
+     */
     private int testModeSleepTime;
 
-
+    /**
+     * Mostly sets up the progress dialog.
+     */
     protected void onPreExecute () {
         mProgressDialog = new ProgressDialog(MainTabActivity.sTheMainActivity);
         mProgressDialog.setTitle("Wiping files");
@@ -42,11 +65,17 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
         mProgressDialog.show();
         mProgressDialog.setOnCancelListener(this);
 
+        // Set up the test mode delay.
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainTabActivity.sTheMainActivity);
         String testModeSleepTimeString = sharedPref.getString("test_mode_sleep_time_key", "10");
         testModeSleepTime = Integer.valueOf(testModeSleepTimeString);
     }
 
+    /**
+     * Called recursively to add the length of each file to the bytes to be wiped.
+     *
+     * @param f     A file to be wiped or a directory of files to be wiped.
+     */
     private void addFileToByteCount (File f) {
         if (f.isFile()) {
             bytesLeftToWipe += f.length();

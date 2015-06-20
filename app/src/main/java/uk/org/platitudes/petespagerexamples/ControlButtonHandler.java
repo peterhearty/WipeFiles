@@ -1,3 +1,14 @@
+/**
+ * The DeleteFilesFragment and the SelectFilesFragment both have a small arrow button
+ * to show or hide the ActionBar. This class holds the button and handles clicks on it.
+ *
+ * Layout: activity_main.xml
+ *
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
+ * @author  Peter Hearty
+ * @date    April 2015
+ */
 package uk.org.platitudes.petespagerexamples;
 
 import android.support.v7.app.ActionBar;
@@ -5,12 +16,14 @@ import android.view.View;
 import android.widget.ImageButton;
 
 /**
- * Finds the button that toggles the action bar and sets up a handler for it.
  *
  * Created by pete on 17/05/15.
  */
 public class ControlButtonHandler implements View.OnClickListener{
 
+    /**
+     * The actual button.
+     */
     private ImageButton mImageButton;
 
     public ControlButtonHandler (View parent) {

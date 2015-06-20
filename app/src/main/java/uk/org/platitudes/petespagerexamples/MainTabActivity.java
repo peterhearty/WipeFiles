@@ -1,12 +1,14 @@
 /**
- * This source code is not owned by anybody. You can can do what you like with it.
- *
  * This is the main entry point for the wipe app. If you want to understand how this
  * app works then this is the place to start. It was created using one of the Android
  * Studio wizards.
  *
+ * Layout: activity_main.xml
+ *
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
  * @author  Peter Hearty
- * @date    2015
+ * @date    April 2015
  */
 package uk.org.platitudes.petespagerexamples;
 
@@ -29,25 +31,46 @@ import java.util.ArrayList;
 public class MainTabActivity extends ActionBarActivity {
 
     /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide
-     * fragments for each of the sections. We use a
-     * {@link android.support.v4.app.FragmentPagerAdapter} derivative, which will keep every
-     * loaded fragment in memory. If this becomes too memory intensive, it
-     * may be best to switch to a
-     * {@link android.support.v4.app.FragmentStatePagerAdapter}.
+     * Returns the number of Fragments (2), their titles and the Fragments themselves.
      */
     public MyFragmentPagerAdapter   mSectionsPagerAdapter;
 
     /**
-     * The {@link ViewPager} that will host the section contents.
+     * The ViewGroup that handles display of the 2 Fragments.
      */
     public ViewPager                mViewPager;
+
+    /**
+     * The ActionBar holds the menu and action buttons.
+     * It also holds the tab headers.
+     */
     public ActionBar                mActionBar;
+
+    /**
+     * Listens for clicks on the tabs in the ActionBar and tells ViewPager
+     * to swicth to the appropriate Fragment (the DeleteFilesFragment or
+     * SelectFilesFragment).
+     */
     public TabListener              mTabListener;
-    static MainTabActivity          sTheMainActivity;
+
+    /**
+     * A couple of preferences, text size and text size for log.
+     */
     public int                      mTextSize;
     public int                      mLogTextSize;
+
+    /**
+     * The log of files that have been wiped.
+     * This is totally the wrong place to hold this but who cares?
+     */
     public ArrayList<String>        mDeleteLog;
+
+    /**
+     * A static reference to this object that gives everything else quick
+     * access to all its public attributes. To any students reading this, this
+     * is extremely bad practice.
+     */
+    static MainTabActivity          sTheMainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +88,6 @@ public class MainTabActivity extends ActionBarActivity {
             mDeleteLog = new ArrayList<>();
         }
 
-
         // Set up the action bar. ActionBar has the app title, menus etc.
         mActionBar = getSupportActionBar();
         mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
@@ -74,6 +96,8 @@ public class MainTabActivity extends ActionBarActivity {
         // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
         FragmentManager fm = getSupportFragmentManager();
+
+        // Creates (or restores) the 2 Fragments: the list of files and the files to be deleted.
         mSectionsPagerAdapter = new MyFragmentPagerAdapter(fm, this);
 
         // Set up the ViewPager with the sections adapter.
@@ -144,7 +168,7 @@ public class MainTabActivity extends ActionBarActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_petes_tab_example, menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
 
         // Totally out of place, but a convenient opportunity to set the app title to the
         // start directory.
