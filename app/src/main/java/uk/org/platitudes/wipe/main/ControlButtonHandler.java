@@ -9,11 +9,14 @@
  * @author  Peter Hearty
  * @date    April 2015
  */
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.main;
 
 import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.widget.ImageButton;
+
+import uk.org.platitudes.petespagerexamples.R;
+import uk.org.platitudes.wipe.main.MainTabActivity;
 
 /**
  *

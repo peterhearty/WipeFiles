@@ -1,4 +1,4 @@
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.file;
 
 import java.io.File;
 

@@ -17,7 +17,7 @@
  * @author  Peter Hearty
  * @date    April 2015
  */
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.file;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -29,6 +29,9 @@ import android.util.Log;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import uk.org.platitudes.wipe.main.DeleteFilesFragment;
+import uk.org.platitudes.wipe.main.MainTabActivity;
 
 public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<String, Object>>, Integer, Void> implements DialogInterface.OnCancelListener {
 
@@ -85,10 +88,20 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
         // Must be a directory
         File[] files = f.listFiles();
         for (File fileFromDirectory : files) {
+            // We're already processing a directory. If we encounter another directory then
+            // make sure recursion is allowed.
+            if (!directoryRecursionAllowed() && fileFromDirectory.isDirectory()) {
+                continue;
+            }
             addFileToByteCount(fileFromDirectory);
         }
     }
 
+    /**
+     * Goes through all the files in the delete list and adds up their lengths.
+     *
+     * @param fileList  The list of files to be deleted.
+     */
     private void calculateBytesToWipe (ArrayList<HashMap<String, Object>> fileList) {
         bytesLeftToWipe = 0;
         for (HashMap<String, Object> hashMap : fileList) {
@@ -96,6 +109,16 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
             File f = fh.file;
             addFileToByteCount (f);
         }
+    }
+
+    /**
+     * Checks the preferences to see if recursive wipe of directories is allowed.
+     */
+    private boolean directoryRecursionAllowed () {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainTabActivity.sTheMainActivity);
+        Boolean allowRecursion = sharedPref.getBoolean("allow_recursion_key", false);
+        boolean result = allowRecursion.booleanValue();
+        return result;
     }
 
     private void wipeFile (File f) {
@@ -143,9 +166,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
 
             // We're already processing a directory. If we encounter another directory then
             // make sure recursion is allowed.
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainTabActivity.sTheMainActivity);
-            Boolean allowRecursion = sharedPref.getBoolean("allow_recursion_key", false);
-            if (!allowRecursion && fileFromDirectory.isDirectory()) {
+            if (!directoryRecursionAllowed() && fileFromDirectory.isDirectory()) {
                 currentFileName = fileFromDirectory.getName();
                 MainTabActivity.sTheMainActivity.mDeleteLog.add("Tree wipe disabled, skipping '"+currentFileName+"'");
                 continue;

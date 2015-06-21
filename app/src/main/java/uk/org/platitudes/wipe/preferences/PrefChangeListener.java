@@ -1,8 +1,10 @@
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.preferences;
 
 import android.preference.CheckBoxPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
+
+import uk.org.platitudes.wipe.main.MainTabActivity;
 
 /**
  * Created by pete on 25/05/15.

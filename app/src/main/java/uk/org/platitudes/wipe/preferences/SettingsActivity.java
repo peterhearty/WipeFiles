@@ -1,4 +1,4 @@
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.preferences;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceManager;
+
+import uk.org.platitudes.petespagerexamples.R;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

@@ -1,4 +1,4 @@
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.main;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -19,6 +19,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import uk.org.platitudes.petespagerexamples.R;
+import uk.org.platitudes.wipe.file.DeleteFilesBackgroundTask;
+import uk.org.platitudes.wipe.adapters.ModifiedSimpleAdapter;
+import uk.org.platitudes.wipe.file.FileHolder;
 
 /**
  * Created by pete on 11/05/15.

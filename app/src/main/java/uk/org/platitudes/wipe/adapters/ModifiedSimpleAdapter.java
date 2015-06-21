@@ -1,4 +1,4 @@
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.adapters;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,6 +14,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import uk.org.platitudes.wipe.file.FileHolder;
+import uk.org.platitudes.wipe.main.MainTabActivity;
+import uk.org.platitudes.petespagerexamples.R;
 
 /**
  * Created by pete on 09/04/15.

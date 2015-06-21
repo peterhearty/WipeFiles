@@ -10,7 +10,7 @@
  * @author  Peter Hearty
  * @date    April 2015
  */
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.main;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -27,13 +27,17 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import uk.org.platitudes.petespagerexamples.R;
+import uk.org.platitudes.wipe.adapters.MyFragmentPagerAdapter;
+import uk.org.platitudes.wipe.preferences.SettingsActivity;
+
 
 public class MainTabActivity extends ActionBarActivity {
 
     /**
      * Returns the number of Fragments (2), their titles and the Fragments themselves.
      */
-    public MyFragmentPagerAdapter   mSectionsPagerAdapter;
+    public MyFragmentPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The ViewGroup that handles display of the 2 Fragments.
@@ -51,7 +55,7 @@ public class MainTabActivity extends ActionBarActivity {
      * to swicth to the appropriate Fragment (the DeleteFilesFragment or
      * SelectFilesFragment).
      */
-    public TabListener              mTabListener;
+    public TabListener mTabListener;
 
     /**
      * A couple of preferences, text size and text size for log.
@@ -70,7 +74,7 @@ public class MainTabActivity extends ActionBarActivity {
      * access to all its public attributes. To any students reading this, this
      * is extremely bad practice.
      */
-    static MainTabActivity          sTheMainActivity;
+    public static MainTabActivity   sTheMainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

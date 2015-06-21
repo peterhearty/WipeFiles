@@ -1,10 +1,14 @@
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.main;
 
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import uk.org.platitudes.petespagerexamples.R;
+import uk.org.platitudes.wipe.adapters.DeleteLogAdapter;
+import uk.org.platitudes.wipe.main.MainTabActivity;
 
 
 public class DeletionLogActivity extends ActionBarActivity implements View.OnClickListener {

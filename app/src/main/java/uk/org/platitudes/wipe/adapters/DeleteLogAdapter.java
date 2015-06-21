@@ -1,4 +1,4 @@
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -8,6 +8,8 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import java.util.List;
+
+import uk.org.platitudes.wipe.main.MainTabActivity;
 
 /**
  * Text size can be changed and alternate lines highlighted.

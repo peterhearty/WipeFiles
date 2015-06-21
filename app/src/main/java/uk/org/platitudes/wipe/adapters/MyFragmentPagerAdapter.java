@@ -1,12 +1,15 @@
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.adapters;
 
 import android.app.Activity;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 
 import java.util.List;
 import java.util.Locale;
+
+import uk.org.platitudes.wipe.main.DeleteFilesFragment;
+import uk.org.platitudes.petespagerexamples.R;
+import uk.org.platitudes.wipe.main.SelectFilesFragment;
 
 /**
  * Returns instances of SelectFilesFrgament or DeleteFilesFragment to the FragmentManager.
@@ -15,8 +18,8 @@ import java.util.Locale;
  */
 public class MyFragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter {
 
-    SelectFilesFragment selectFilesFragment;
-    DeleteFilesFragment deleteFilesFragment;
+    public SelectFilesFragment selectFilesFragment;
+    public DeleteFilesFragment deleteFilesFragment;
     Activity mActivity;
 
     public MyFragmentPagerAdapter(FragmentManager fm, Activity a) {

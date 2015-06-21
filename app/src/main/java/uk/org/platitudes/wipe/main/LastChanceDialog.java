@@ -1,4 +1,4 @@
-package uk.org.platitudes.petespagerexamples;
+package uk.org.platitudes.wipe.main;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -8,6 +8,9 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
+
+import uk.org.platitudes.wipe.main.DeleteFilesFragment;
+import uk.org.platitudes.wipe.main.MainTabActivity;
 
 /**
  * Invoked by DeleteFilesFragment when user clicks the "Delete" button.
