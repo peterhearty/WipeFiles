@@ -1,3 +1,9 @@
+/**
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
+ * @author  Peter Hearty
+ * @date    April 2015
+ */
 package uk.org.platitudes.wipe.main;
 
 import android.content.Context;
@@ -26,19 +32,31 @@ import uk.org.platitudes.wipe.adapters.ModifiedSimpleAdapter;
 import uk.org.platitudes.wipe.file.FileHolder;
 
 /**
- * Created by pete on 11/05/15.
+ * Provides one of the two main tab views, the other being SelectFilesFragment.
+ * Both get created by MyFragmentPagerAdapter which in turn gets created and
+ * added to the ViewPager ViewGroup by MainTabActivity.
+ *
+ * Layout:   file_list_with_title_and_button.xml
  */
 public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemLongClickListener, View.OnClickListener {
 
-    private View mRootView;
+    /**
+     * The ListView is defined in file_list_with_title.xml.
+     */
     public ListView mListView;
-    public SimpleAdapter simpleAdapter;
+
+    /**
+     * Actually an instance of ModifiedSimpleAdapter. This allows us to intercept the views being
+     * created for the ListView and modify icons and font size.
+     */
+    public SimpleAdapter mSimpleAdapter;
 
     // theData is an ArrayList, one entry for each row displayed.
     // Each row is represented by a single HashMap.
     // Each HashMap has two keys, "file type" and "File".
     // The values for "file type" are one of the strings "dir" or "file".
     // The values for "File" are always a FileHolder object.
+    // This data structure is mandated by simpleAdapter.
 
     public static String[] from = new String[] {"file_type", "File" };
     private int[] to = new int[] { R.id.text1, R.id.text2 };
@@ -47,8 +65,7 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
 
     // Is the no-args constructor compulsory?
     // That would explain why a factory is used to create instances.
-    public DeleteFilesFragment() {
-    }
+    public DeleteFilesFragment() {}
 
     @Override
     public View onCreateView(
@@ -69,18 +86,20 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
 
         // container is the ViewPager
         // rootView is the RelativeLayout or whatever at the root of this Fragment
-        mRootView = inflater.inflate(R.layout.fragment_petes_tab_example, container, false);
+        View mRootView = inflater.inflate(R.layout.file_list_with_title_and_button, container, false);
         mControlButtonHandler = new ControlButtonHandler(mRootView);
 
-        Button button = (Button) mRootView.findViewById(R.id.main_button);
-        button.setText("Wipe files");
+        Button button = (Button) mRootView.findViewById(R.id.test_wipe_button);
+        button.setText("Test wipe");
         button.setOnClickListener(this);
 
-        mListView = (ListView) mRootView.findViewById(R.id.listView);
+        // lostOfFiles is defined in file_list_with_title which is included in
+        // file_list_with_title_and_button
+        mListView = (ListView) mRootView.findViewById(R.id.listOfFiles);
 
         // NOTE - BELOW IS WHERE ROW_LAYOUT GETS USED
-        simpleAdapter = new ModifiedSimpleAdapter(mRootView.getContext(), theData, R.layout.row_layout, from, to);
-        mListView.setAdapter(simpleAdapter);
+        mSimpleAdapter = new ModifiedSimpleAdapter(mRootView.getContext(), theData, R.layout.row_layout, from, to);
+        mListView.setAdapter(mSimpleAdapter);
         mListView.setSelected(false);
         mListView.setOnItemLongClickListener(this);
 
@@ -91,10 +110,10 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
 
     public void resetAdapter () {
         // This relies on a side affect of setting the adapter to clear the view cache in ListView.
-        // simply doing simpleAdapter.notifyDataSetChanged() or mListView.invalidateViews() will
+        // Simply doing mSimpleAdapter.notifyDataSetChanged() or mListView.invalidateViews() will
         // retain cached views if possible. If the font size gets reduced then we get smaller text
-        // but still inside large views.
-        mListView.setAdapter(simpleAdapter);
+        // but still inside large (cached) views.
+        mListView.setAdapter(mSimpleAdapter);
     }
 
     public boolean addRowForFile (File f) {
@@ -117,10 +136,10 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
         FileHolder fh = new FileHolder(f);
         map.put(from[1], fh);
         theData.add(map);
-        if (simpleAdapter != null)
+        if (mSimpleAdapter != null)
             // Can be null at startup as files are added when app is recreated
             // Keep it is this way to prevent multiple calls to notifyDataSetInvalidated
-            simpleAdapter.notifyDataSetInvalidated();
+            mSimpleAdapter.notifyDataSetInvalidated();
         return true;
     }
 
@@ -145,7 +164,7 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
         theData.remove(position);
-        simpleAdapter.notifyDataSetInvalidated();
+        mSimpleAdapter.notifyDataSetInvalidated();
 
         return true;
     }

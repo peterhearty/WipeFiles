@@ -1,9 +1,4 @@
 /**
- * The DeleteFilesFragment and the SelectFilesFragment both have a small arrow button
- * to show or hide the ActionBar. This class holds the button and handles clicks on it.
- *
- * Layout: activity_main.xml
- *
  * This source code is not owned by anybody. You can can do what you like with it.
  *
  * @author  Peter Hearty
@@ -19,8 +14,11 @@ import uk.org.platitudes.petespagerexamples.R;
 import uk.org.platitudes.wipe.main.MainTabActivity;
 
 /**
+ * The DeleteFilesFragment and the SelectFilesFragment both have a small arrow button
+ * to show or hide the ActionBar. This class holds the button and handles clicks on it.
  *
- * Created by pete on 17/05/15.
+ * Layout: activity_main.xml
+ *
  */
 public class ControlButtonHandler implements View.OnClickListener{
 

@@ -1,17 +1,4 @@
 /**
- * Delete files as a background task. Invoked by the DeleteFilesFragment when the user clicks on the
- * "Wipe files" button and confirms with the LastChanceDialog.
- *
- * Note: according to /Android/Sdk/docs/reference/android/os/AsyncTask.html.
-
- "AsyncTask is designed to be a helper class around Thread and Handler and does not constitute
- a generic threading framework. AsyncTasks should ideally be used for short operations (a few
- seconds at the most.) If you need to keep threads running for long periods of time, it is
- highly recommended you use the various APIs provided by the java.util.concurrent package such
- as Executor, ThreadPoolExecutor and FutureTask."
-
- * Despite the above warning, AsyncTask seems to work OK for extended tasks.
- *
  * This source code is not owned by anybody. You can can do what you like with it.
  *
  * @author  Peter Hearty
@@ -33,6 +20,21 @@ import java.util.HashMap;
 import uk.org.platitudes.wipe.main.DeleteFilesFragment;
 import uk.org.platitudes.wipe.main.MainTabActivity;
 
+/**
+ * Delete files as a background task. Invoked by the DeleteFilesFragment when the user clicks on the
+ * "Wipe files" button and confirms with the LastChanceDialog.
+ *
+ * Note: according to /Android/Sdk/docs/reference/android/os/AsyncTask.html.
+
+ "AsyncTask is designed to be a helper class around Thread and Handler and does not constitute
+ a generic threading framework. AsyncTasks should ideally be used for short operations (a few
+ seconds at the most.) If you need to keep threads running for long periods of time, it is
+ highly recommended you use the various APIs provided by the java.util.concurrent package such
+ as Executor, ThreadPoolExecutor and FutureTask."
+
+ * Despite the above warning, AsyncTask seems to work OK for extended tasks.
+ *
+ */
 public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<String, Object>>, Integer, Void> implements DialogInterface.OnCancelListener {
 
     /**
@@ -43,18 +45,13 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
     /*
      * Hopefully next 2 are self explanatory.
      */
-    private long bytesLeftToWipe;
+    long bytesLeftToWipe;
     private long maxBytesToWipe;
 
     /**
      * The file currently being wiped is shown in the progress dialog.
      */
-    private String currentFileName;
-
-    /**
-     * Used when testing the app to simulate time passing while files are pretended to be deleted.
-     */
-    private int testModeSleepTime;
+    String currentFileName;
 
     /**
      * Mostly sets up the progress dialog.
@@ -67,11 +64,6 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
         mProgressDialog.setCancelable(true);
         mProgressDialog.show();
         mProgressDialog.setOnCancelListener(this);
-
-        // Set up the test mode delay.
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainTabActivity.sTheMainActivity);
-        String testModeSleepTimeString = sharedPref.getString("test_mode_sleep_time_key", "10");
-        testModeSleepTime = Integer.valueOf(testModeSleepTimeString);
     }
 
     /**
@@ -121,41 +113,21 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
         return result;
     }
 
+    /**
+     * Called by the FileWiper to update progress.
+     */
+    void progress (long bytesWiped) {
+        int p = (int) ((maxBytesToWipe-bytesLeftToWipe+bytesWiped)*100/maxBytesToWipe);
+        publishProgress(p);
+    }
+
     private void wipeFile (File f) {
         if (isCancelled())
             return;
 
         if (f.isFile()) {
-            currentFileName = f.getName();
-
-            // An ordinary file to wipe
-            long fileSize = f.length();
-            long bytesWiped = 0;
-
-            MainTabActivity.sTheMainActivity.mDeleteLog.add("Wiping "+currentFileName+" size "+fileSize);
-
-            while (bytesWiped < fileSize) {
-
-                currentFileName = f.getName()+" "+bytesWiped+"/"+fileSize;
-                int progress = (int) ((maxBytesToWipe-bytesLeftToWipe+bytesWiped)*100/maxBytesToWipe);
-                publishProgress(progress);
-
-                try {
-                    Thread.sleep(testModeSleepTime);
-                } catch (InterruptedException e) {
-                    Log.e("app", "Background delete", e);
-                }
-                bytesWiped += 1024;
-                if (isCancelled()) {
-                    MainTabActivity.sTheMainActivity.mDeleteLog.add ("Delete cancelled");
-                    break;
-                }
-            }
-
-            bytesLeftToWipe -= f.length();
-
-            int progress = (int) ((maxBytesToWipe-bytesLeftToWipe)*100/maxBytesToWipe);
-            publishProgress(progress);
+            FileWiper fw = new TestFileWiper(this);
+            fw.wipeFile(f);
             return;
         }
 
@@ -190,6 +162,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
             FileHolder fh = (FileHolder) hashMap.get(DeleteFilesFragment.from[1]);
             File f = fh.file;
             wipeFile (f);
+            // TODO - have to remove file from list, except when doing a test run.
             if (isCancelled()) {
                 Log.i("bgrnd", "file delete cancelled");
                 break;

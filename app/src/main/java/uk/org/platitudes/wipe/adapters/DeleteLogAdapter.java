@@ -1,3 +1,9 @@
+/**
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
+ * @author  Peter Hearty
+ * @date    April 2015
+ */
 package uk.org.platitudes.wipe.adapters;
 
 import android.content.Context;

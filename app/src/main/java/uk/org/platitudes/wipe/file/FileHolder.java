@@ -1,9 +1,16 @@
+/**
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
+ * @author  Peter Hearty
+ * @date    April 2015
+ */
 package uk.org.platitudes.wipe.file;
 
 import java.io.File;
 
 /**
- * Created by pete on 06/04/15.
+ * Holds a File object and an override for the file name. Lets us call a
+ * parrent directory something like ".." or "<up>".
  */
 public class FileHolder {
 

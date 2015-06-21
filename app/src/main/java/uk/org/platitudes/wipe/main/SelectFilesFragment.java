@@ -92,7 +92,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
 
         mControlButtonHandler = new ControlButtonHandler(mRootView);
 
-        mListView = (ListView) mRootView.findViewById(R.id.listView);
+        mListView = (ListView) mRootView.findViewById(R.id.listOfFiles);
         populateData(mCurDir);
 
         // NOTE - BELOW IS WHERE ROW_LAYOUT GETS USED
@@ -108,7 +108,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
 
     public void resetAdapter () {
         // This relies on a side affect of setting the adapter to clear the view cache in ListView.
-        // simply doing simpleAdapter.notifyDataSetChanged() or mListView.invalidateViews() will
+        // simply doing mSimpleAdapter.notifyDataSetChanged() or mListView.invalidateViews() will
         // retain cached views if possible. If the font size gets reduced then we get smaller text
         // but stil inside large views.
         mListView.setAdapter(simpleAdapter);

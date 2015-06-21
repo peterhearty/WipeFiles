@@ -1,3 +1,9 @@
+/**
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
+ * @author  Peter Hearty
+ * @date    April 2015
+ */
 package uk.org.platitudes.wipe.adapters;
 
 import android.app.Activity;
@@ -20,13 +26,32 @@ import uk.org.platitudes.wipe.main.MainTabActivity;
 import uk.org.platitudes.petespagerexamples.R;
 
 /**
- * Created by pete on 09/04/15.
+ * Modifies the SimpleAdapter used to display a row of data in a ListView.
+ * Allows us to modify the icon in response to a file type and to alter the
+ * text size on the basis of user preferences.
+ *
+ * @Layout  row_layout.xml Passed as a resource ID to the constructor.
  */
 public class ModifiedSimpleAdapter extends SimpleAdapter {
 
+    /**
+     * Passed from
+     */
     private Context mContext;
+
+    /**
+     * See SelectFilesFragment for a description of this data structure.
+     */
     private ArrayList<HashMap<String, Object>> mData;
+
+    /**
+     * The resource ID of the row layout, in this case row_layout.xml.
+     */
     private int mResourceId;
+
+    /**
+     * The keys used to access each HashMap row of ArrayList<HashMap<String, Object>> mData.
+     */
     private String[] mFrom;
 
 
@@ -43,8 +68,6 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        // The main point of overriding this method is to be able to set the row icon
-        // differently for files and folders.
         View result = null;
         if (convertView != null) {
             // ListView recycles views. We have to undo any modifications

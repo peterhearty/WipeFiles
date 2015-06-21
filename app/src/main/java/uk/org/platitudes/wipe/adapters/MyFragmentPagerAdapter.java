@@ -1,3 +1,9 @@
+/**
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
+ * @author  Peter Hearty
+ * @date    April 2015
+ */
 package uk.org.platitudes.wipe.adapters;
 
 import android.app.Activity;
@@ -13,8 +19,6 @@ import uk.org.platitudes.wipe.main.SelectFilesFragment;
 
 /**
  * Returns instances of SelectFilesFrgament or DeleteFilesFragment to the FragmentManager.
- *
- * Created by pete on 30/04/15.
  */
 public class MyFragmentPagerAdapter extends android.support.v4.app.FragmentPagerAdapter {
 
