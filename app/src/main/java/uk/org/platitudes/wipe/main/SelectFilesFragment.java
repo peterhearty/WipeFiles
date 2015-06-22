@@ -1,3 +1,9 @@
+/**
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
+ * @author  Peter Hearty
+ * @date    April 2015
+ */
 package uk.org.platitudes.wipe.main;
 
 import android.content.Context;
@@ -26,54 +32,45 @@ import uk.org.platitudes.wipe.adapters.ModifiedSimpleAdapter;
 import uk.org.platitudes.wipe.file.FileHolder;
 
 /**
- * Created by pete on 30/04/15.
+ * Allows a user to select files to add to the deletetion list.
+ * Holds the contents of a single directory at a time.
  */
 public class SelectFilesFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
 
     /**
-     * The fragment argument representing the section number for this
-     * fragment.
+     * The tope level view of the inflated layout.
      */
-    public static final String ARG_SECTION_NUMBER = "section_number";
-    public static final String ARG_SELECTION_COUNT = "Selection count";
-
-    private View mRootView;
-    public ListView mListView;
-    public SimpleAdapter simpleAdapter;
-    private File mCurDir;
-    public ControlButtonHandler mControlButtonHandler;
-
-    // theData is an ArrayList, one entry for each row displayed.
-    // Each row is represented by a single HashMap.
-    // Each HashMap has two keys, "file type" and "File".
-    // The values for "file type" are one of the strings "dir" or "file".
-    // The values for "File" are always a FileHolder object.
-
-    private String[] from = new String[] {"file_type", "File" };
-    private int[] to = new int[] { R.id.text1, R.id.text2 };
-    private ArrayList<HashMap<String, Object>> theData;
+    private View                    mRootView;
 
     /**
-     * Returns a new instance of this fragment for the given section
-     * number.
+     * The view that holds the list of files.
      */
-    public static SelectFilesFragment newInstance(int sectionNumber) {
-        SelectFilesFragment fragment = new SelectFilesFragment();
+    public  ListView                mListView;
 
-        // Used to use the args to pass in the section number.
-        // Just use the attribute mSectionNumber now.
-        Bundle args = new Bundle();
-        args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-        args.putInt(ARG_SELECTION_COUNT, 0);
-        fragment.setArguments(args);
+    /**
+     * A MofifiedSimpleAdapter.
+     */
+    public  SimpleAdapter           simpleAdapter;
 
-        return fragment;
-    }
+    /**
+     * The directory currently being displayed in the ListView.
+     */
+    private File                    mCurDir;
+
+    /**
+     * Handles the small button that shows/hides the ActionBar.
+     */
+    public  ControlButtonHandler    mControlButtonHandler;
+
+    /**
+     * Holds a listing of the current directory.
+     * See ModifiedSimpleAdapter for a description of this.
+     */
+    private ArrayList<HashMap<String, Object>> theData;
 
     // Is the no-args constructor compulsory?
     // That would explain why a factory is used to create instances.
-    public SelectFilesFragment() {
-    }
+    public SelectFilesFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,10 +90,15 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         mControlButtonHandler = new ControlButtonHandler(mRootView);
 
         mListView = (ListView) mRootView.findViewById(R.id.listOfFiles);
-        populateData(mCurDir);
+        populateData(mCurDir); // Side effect = theData gets initialised
 
         // NOTE - BELOW IS WHERE ROW_LAYOUT GETS USED
-        simpleAdapter = new ModifiedSimpleAdapter(mRootView.getContext(), theData, R.layout.row_layout, from, to);
+        simpleAdapter = new ModifiedSimpleAdapter(
+                mRootView.getContext(),
+                theData,
+                R.layout.row_layout,
+                ModifiedSimpleAdapter.from,
+                ModifiedSimpleAdapter.to);
         mListView.setAdapter(simpleAdapter);
         mListView.setSelected(false);
         mListView.setOnItemClickListener(this);
@@ -115,10 +117,10 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
     }
 
     private void addRowForFile (FileHolder f) {
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put(from[0], "File");
-        if (f.file.isDirectory()) map.put(from[0], "Dir");
-        map.put(from[1], f);
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(ModifiedSimpleAdapter.from[0], "File");
+        if (f.file.isDirectory()) map.put(ModifiedSimpleAdapter.from[0], "Dir");
+        map.put(ModifiedSimpleAdapter.from[1], f);
         theData.add(map);
     }
 
@@ -126,7 +128,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         String title = "";
         if (mCurDir != null) {
             try {
-                title = mCurDir.getCanonicalPath().toString();
+                title = mCurDir.getCanonicalPath();
             } catch (IOException ioe) {
                 title = ioe.toString();
             }
@@ -137,7 +139,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
     private void populateData (File dirFile) {
         if (!dirFile.isDirectory()) return;
 
-        if (theData == null) theData = new ArrayList<HashMap<String, Object>>();
+        if (theData == null) theData = new ArrayList<>();
 
         File[] files = dirFile.listFiles();
         if (files == null) return;                              // Check for no permission to read directory
@@ -158,8 +160,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         }
 
         // Add files in directory
-        for(int i = 0; i < files.length; i++) {
-            File f = files[i];
+        for (File f : files) {
             FileHolder fh = new FileHolder(f);
             fh.nameOverride = f.getName();
             addRowForFile(fh);
@@ -177,7 +178,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         try {
-            outState.putString("directory", mCurDir.getCanonicalPath().toString());
+            outState.putString("directory", mCurDir.getCanonicalPath());
         } catch (IOException ioe) {
             Log.e("app", "saving instance dir", ioe);
         }
@@ -195,7 +196,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        FileHolder fh = (FileHolder) theData.get(position).get(from[1]);
+        FileHolder fh = (FileHolder) theData.get(position).get(ModifiedSimpleAdapter.from[1]);
         File f = fh.file;
         populateData(f);
         mListView.invalidateViews();
@@ -211,7 +212,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
 
     @Override
     public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        FileHolder fh = (FileHolder) theData.get(position).get(from[1]);
+        FileHolder fh = (FileHolder) theData.get(position).get(ModifiedSimpleAdapter.from[1]);
         File f = fh.file;
 
         if (f.isDirectory()) {

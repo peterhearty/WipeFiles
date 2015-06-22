@@ -43,23 +43,27 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
     /**
      * The ListView is defined in file_list_with_title.xml.
      */
-    public ListView mListView;
+    public ListView         mListView;
 
     /**
      * Actually an instance of ModifiedSimpleAdapter. This allows us to intercept the views being
      * created for the ListView and modify icons and font size.
      */
-    public SimpleAdapter mSimpleAdapter;
+    public SimpleAdapter    mSimpleAdapter;
 
-    // theData is an ArrayList, one entry for each row displayed.
-    // Each row is represented by a single HashMap.
-    // Each HashMap has two keys, "file type" and "File".
-    // The values for "file type" are one of the strings "dir" or "file".
-    // The values for "File" are always a FileHolder object.
-    // This data structure is mandated by simpleAdapter.
+    /**
+     * This gets clicked to test out what files get wiped.
+     */
+    private Button          mTestWipeButton;
 
-    public static String[] from = new String[] {"file_type", "File" };
-    private int[] to = new int[] { R.id.text1, R.id.text2 };
+    /**
+     * This gets clicked to perform the file wipe.
+     */
+    private Button          mRealWipeButton;
+
+    /**
+     * See ModifiedSimpleAdapter for a description of this.
+     */
     private ArrayList<HashMap<String, Object>> theData;
     public ControlButtonHandler mControlButtonHandler;
 
@@ -73,7 +77,7 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
         ViewGroup container,
         Bundle savedInstanceState
     ) {
-        theData = new ArrayList<HashMap<String, Object>>();
+        theData = new ArrayList<>();
 
         if (savedInstanceState != null) {
             // data from previous incarnation
@@ -86,26 +90,33 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
 
         // container is the ViewPager
         // rootView is the RelativeLayout or whatever at the root of this Fragment
-        View mRootView = inflater.inflate(R.layout.file_list_with_title_and_button, container, false);
-        mControlButtonHandler = new ControlButtonHandler(mRootView);
+        View rootView = inflater.inflate(R.layout.file_list_with_title_and_button, container, false);
+        mControlButtonHandler = new ControlButtonHandler(rootView);
 
-        Button button = (Button) mRootView.findViewById(R.id.test_wipe_button);
-        button.setText("Test wipe");
-        button.setOnClickListener(this);
+        // Listen for clicks on the buttons
+        mTestWipeButton = (Button) rootView.findViewById(R.id.test_wipe_button);
+        mTestWipeButton.setOnClickListener(this);
+        mRealWipeButton = (Button) rootView.findViewById(R.id.real_wipe_button);
+        mRealWipeButton.setOnClickListener(this);
 
         // lostOfFiles is defined in file_list_with_title which is included in
         // file_list_with_title_and_button
-        mListView = (ListView) mRootView.findViewById(R.id.listOfFiles);
+        mListView = (ListView) rootView.findViewById(R.id.listOfFiles);
 
         // NOTE - BELOW IS WHERE ROW_LAYOUT GETS USED
-        mSimpleAdapter = new ModifiedSimpleAdapter(mRootView.getContext(), theData, R.layout.row_layout, from, to);
+        mSimpleAdapter = new ModifiedSimpleAdapter(
+                rootView.getContext(),
+                theData,
+                R.layout.row_layout,
+                ModifiedSimpleAdapter.from,
+                ModifiedSimpleAdapter.to);
         mListView.setAdapter(mSimpleAdapter);
         mListView.setSelected(false);
         mListView.setOnItemLongClickListener(this);
 
-        TextView tv = (TextView) mRootView.findViewById(R.id.section_label);
+        TextView tv = (TextView) rootView.findViewById(R.id.section_label);
         tv.setText("Long click to remove file from list");
-        return mRootView;
+        return rootView;
     }
 
     public void resetAdapter () {
@@ -119,7 +130,7 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
     public boolean addRowForFile (File f) {
         // First check to see if file already in list
         for (HashMap<String, Object> hm : theData) {
-            FileHolder fh = (FileHolder) hm.get(from[1]);
+            FileHolder fh = (FileHolder) hm.get(ModifiedSimpleAdapter.from[1]);
             try {
                 String existingPath = fh.file.getCanonicalPath();
                 String newPath = f.getCanonicalPath();
@@ -130,11 +141,11 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
             }
         }
 
-        HashMap<String, Object> map = new HashMap<String, Object>();
-        map.put(from[0], "File");
-        if (f.isDirectory()) map.put(from[0], "Dir");
+        HashMap<String, Object> map = new HashMap<>();
+        map.put(ModifiedSimpleAdapter.from[0], "File");
+        if (f.isDirectory()) map.put(ModifiedSimpleAdapter.from[0], "Dir");
         FileHolder fh = new FileHolder(f);
-        map.put(from[1], fh);
+        map.put(ModifiedSimpleAdapter.from[1], fh);
         theData.add(map);
         if (mSimpleAdapter != null)
             // Can be null at startup as files are added when app is recreated
@@ -147,10 +158,10 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         int numberOfFiles = theData.size();
-        ArrayList<String> filesToDelete = new ArrayList<String>(numberOfFiles);
+        ArrayList<String> filesToDelete = new ArrayList<>(numberOfFiles);
         try {
             for (HashMap<String, Object> hm : theData) {
-                FileHolder fh = (FileHolder) hm.get(from[1]);
+                FileHolder fh = (FileHolder) hm.get(ModifiedSimpleAdapter.from[1]);
                 File f = fh.file;
                 String filename = f.getCanonicalPath();
                 filesToDelete.add(filename);
@@ -175,6 +186,10 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
         toast.show();
     }
 
+    /**
+     * Handles clicks from the "test wipe" and "real wipe" buttons.
+     * @param v
+     */
     @Override
     public void onClick(View v) {
         // Gets called when button is clicked.
@@ -182,9 +197,18 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
             showToast("No files to delete");
             return;
         }
-        LastChanceDialog lastChanceDialog = new LastChanceDialog();
-        FragmentManager fm = getFragmentManager();
-        lastChanceDialog.show(fm, "Last chance dialog");
+
+        Button b = (Button) v;
+        if (b == mTestWipeButton) {
+            // perform test wipe
+            DeleteFilesBackgroundTask dfbt = new DeleteFilesBackgroundTask();
+            dfbt.execute(theData);
+        } else {
+            // must be the real wipe - confirm first
+            LastChanceDialog lastChanceDialog = new LastChanceDialog();
+            FragmentManager fm = getFragmentManager();
+            lastChanceDialog.show(fm, "Last chance dialog");
+        }
     }
 
     /**

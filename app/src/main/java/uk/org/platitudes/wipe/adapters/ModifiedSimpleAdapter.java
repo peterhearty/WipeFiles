@@ -39,6 +39,17 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
      */
     private Context mContext;
 
+    // mData is an ArrayList, one entry for each row displayed.
+    // Each row is represented by a single HashMap.
+    // Each HashMap has two keys, "file type" and "File".
+    // The values for "file type" are one of the strings "dir" or "file".
+    // The values for "File" are always a FileHolder object.
+    //  R.id.text1 and R.id.text2 are TextView objects defined in row_layout.xml.
+    // This data structure is mandated by simpleAdapter.
+
+    public static final String[] from = new String[] {"file_type", "File" };
+    public static final int[] to = new int[] { R.id.text1, R.id.text2 };
+
     /**
      * See SelectFilesFragment for a description of this data structure.
      */
@@ -49,21 +60,15 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
      */
     private int mResourceId;
 
-    /**
-     * The keys used to access each HashMap row of ArrayList<HashMap<String, Object>> mData.
-     */
-    private String[] mFrom;
-
-
-
     public ModifiedSimpleAdapter(Context context, List<? extends Map<String, ?>> data, int resource, String[] from, int[] to) {
         super(context, data, resource, from, to);
 
         mContext = context;
         mData = (ArrayList<HashMap<String, Object>>) data;
         mResourceId = resource;
-        mFrom = from;
 
+        // We don't have to save the "from" or "to" parameters as this class defines it
+        // and the SelectFiles and DeleteFiles both take it from here.
     }
 
     @Override
@@ -80,10 +85,10 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
         }
 
         HashMap<String, Object> rowData = mData.get(position);
-        String col1 = (String) rowData.get(mFrom[0]);
-        FileHolder col2 = (FileHolder) rowData.get(mFrom[1]);
-        TextView tv1 = (TextView) result.findViewById(R.id.text1);
-        TextView tv2 = (TextView) result.findViewById(R.id.text2);
+        String col1 = (String) rowData.get(from[0]);
+        FileHolder col2 = (FileHolder) rowData.get(from[1]);
+        TextView tv1 = (TextView) result.findViewById(to[0]);
+        TextView tv2 = (TextView) result.findViewById(to[1]);
         tv1.setText(col1);
         tv2.setText(col2.toString());
 

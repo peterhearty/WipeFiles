@@ -1,10 +1,4 @@
 /**
- * This is the main entry point for the wipe app. If you want to understand how this
- * app works then this is the place to start. It was created using one of the Android
- * Studio wizards.
- *
- * Layout: activity_main.xml
- *
  * This source code is not owned by anybody. You can can do what you like with it.
  *
  * @author  Peter Hearty
@@ -32,6 +26,13 @@ import uk.org.platitudes.wipe.adapters.MyFragmentPagerAdapter;
 import uk.org.platitudes.wipe.preferences.SettingsActivity;
 
 
+/**
+ * This is the main entry point for the wipe app. If you want to understand how this
+ * app works then this is the place to start. It was created using one of the Android
+ * Studio wizards.
+ *
+ * Layout: activity_main.xml
+ */
 public class MainTabActivity extends ActionBarActivity {
 
     /**

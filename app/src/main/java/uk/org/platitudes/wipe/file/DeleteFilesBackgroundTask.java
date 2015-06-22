@@ -17,7 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uk.org.platitudes.wipe.main.DeleteFilesFragment;
+import uk.org.platitudes.wipe.adapters.ModifiedSimpleAdapter;
 import uk.org.platitudes.wipe.main.MainTabActivity;
 
 /**
@@ -54,6 +54,11 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
     String currentFileName;
 
     /**
+     * Used to wipe files - either a TestFileWiper or a RealFileWiper.
+     */
+    private FileWiper       mFileWiper;
+
+    /**
      * Mostly sets up the progress dialog.
      */
     protected void onPreExecute () {
@@ -64,6 +69,8 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
         mProgressDialog.setCancelable(true);
         mProgressDialog.show();
         mProgressDialog.setOnCancelListener(this);
+
+        mFileWiper = new TestFileWiper(this);
     }
 
     /**
@@ -97,7 +104,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
     private void calculateBytesToWipe (ArrayList<HashMap<String, Object>> fileList) {
         bytesLeftToWipe = 0;
         for (HashMap<String, Object> hashMap : fileList) {
-            FileHolder fh = (FileHolder) hashMap.get(DeleteFilesFragment.from[1]);
+            FileHolder fh = (FileHolder) hashMap.get(ModifiedSimpleAdapter.from[1]);
             File f = fh.file;
             addFileToByteCount (f);
         }
@@ -126,8 +133,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
             return;
 
         if (f.isFile()) {
-            FileWiper fw = new TestFileWiper(this);
-            fw.wipeFile(f);
+            mFileWiper.wipeFile(f);
             return;
         }
 
@@ -159,7 +165,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
         calculateBytesToWipe (theData);
         maxBytesToWipe = bytesLeftToWipe;
         for (HashMap<String, Object> hashMap : theData) {
-            FileHolder fh = (FileHolder) hashMap.get(DeleteFilesFragment.from[1]);
+            FileHolder fh = (FileHolder) hashMap.get(ModifiedSimpleAdapter.from[1]);
             File f = fh.file;
             wipeFile (f);
             // TODO - have to remove file from list, except when doing a test run.

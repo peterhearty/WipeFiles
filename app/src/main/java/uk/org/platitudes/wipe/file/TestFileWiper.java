@@ -36,6 +36,10 @@ public class TestFileWiper implements FileWiper {
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainTabActivity.sTheMainActivity);
         String testModeSleepTimeString = sharedPref.getString("test_mode_sleep_time_key", "10");
         testModeSleepTime = Integer.valueOf(testModeSleepTimeString);
+
+        // Always force a minumum sleep time
+        if (testModeSleepTime < 1)
+            testModeSleepTime = 1;
     }
 
     @Override
@@ -54,8 +58,7 @@ public class TestFileWiper implements FileWiper {
             deleteFilesBackgroundTask.progress(bytesWiped);
 
             try {
-                if (testModeSleepTime > 0)
-                    Thread.sleep(testModeSleepTime);
+                Thread.sleep(testModeSleepTime);
             } catch (InterruptedException e) {
                 Log.e("app", "Background delete", e);
             }
