@@ -67,4 +67,13 @@ public class ControlButtonHandler implements View.OnClickListener{
             mImageButton.setImageResource(R.drawable.arrow_down);
         }
     }
+
+    /**
+     * Both SelectFilesFragment and DeleteFilesFragment implement this.
+     * It allows the TabListener to access the button state on both fragments.
+     */
+    public interface GetControlButtonHandler {
+        public ControlButtonHandler getControlButtonHandler();
+    }
 }
+

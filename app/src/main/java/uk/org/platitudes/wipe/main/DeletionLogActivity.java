@@ -1,3 +1,9 @@
+/**
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
+ * @author  Peter Hearty
+ * @date    April 2015
+ */
 package uk.org.platitudes.wipe.main;
 
 import android.support.v7.app.ActionBarActivity;
@@ -10,7 +16,9 @@ import uk.org.platitudes.petespagerexamples.R;
 import uk.org.platitudes.wipe.adapters.DeleteLogAdapter;
 import uk.org.platitudes.wipe.main.MainTabActivity;
 
-
+/**
+ * Displays the log of files deleted in the last deltion run.
+ */
 public class DeletionLogActivity extends ActionBarActivity implements View.OnClickListener {
 
     private ArrayAdapter arrayAdapter;

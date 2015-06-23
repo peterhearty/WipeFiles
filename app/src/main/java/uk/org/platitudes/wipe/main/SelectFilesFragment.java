@@ -34,8 +34,10 @@ import uk.org.platitudes.wipe.file.FileHolder;
 /**
  * Allows a user to select files to add to the deletetion list.
  * Holds the contents of a single directory at a time.
+ *
+ * Layout tab_without_button
  */
-public class SelectFilesFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener {
+public class SelectFilesFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, ControlButtonHandler.GetControlButtonHandler {
 
     /**
      * The tope level view of the inflated layout.
@@ -60,7 +62,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
     /**
      * Handles the small button that shows/hides the ActionBar.
      */
-    public  ControlButtonHandler    mControlButtonHandler;
+    private  ControlButtonHandler    mControlButtonHandler;
 
     /**
      * Holds a listing of the current directory.
@@ -239,4 +241,8 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         return true;
     }
 
+    @Override
+    public ControlButtonHandler getControlButtonHandler() {
+        return mControlButtonHandler;
+    }
 }

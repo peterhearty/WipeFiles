@@ -1,3 +1,9 @@
+/**
+ * This source code is not owned by anybody. You can can do what you like with it.
+ *
+ * @author  Peter Hearty
+ * @date    April 2015
+ */
 package uk.org.platitudes.wipe.main;
 
 import android.support.v4.app.Fragment;
@@ -11,7 +17,7 @@ import uk.org.platitudes.wipe.main.DeleteFilesFragment;
 import uk.org.platitudes.wipe.main.SelectFilesFragment;
 
 /**
- * Created by pete on 30/04/15.
+ * Switches views when a tab is selected.
  */
 public class TabListener implements ActionBar.TabListener  {
 
@@ -39,16 +45,11 @@ public class TabListener implements ActionBar.TabListener  {
             if (v != null) {    // tab can get selected when view hasn't been constructed yet
                 v.invalidate();
             }
-            // TODO - move the button check and other common stuff to a common superclass.
-            if (f instanceof SelectFilesFragment) {
-                SelectFilesFragment sff = (SelectFilesFragment) f;
-                if (sff.mControlButtonHandler != null)
-                    sff.mControlButtonHandler.checkButtonStatus();
-            }
-            if (f instanceof DeleteFilesFragment) {
-                DeleteFilesFragment dff = (DeleteFilesFragment) f;
-                if (dff.mControlButtonHandler != null)
-                    dff.mControlButtonHandler.checkButtonStatus();
+            // Make sure that the correct image is shown for the show/hide ActionBar button.
+            if (f instanceof ControlButtonHandler.GetControlButtonHandler) {
+                ControlButtonHandler.GetControlButtonHandler gcbh = (ControlButtonHandler.GetControlButtonHandler) f;
+                ControlButtonHandler cbh = gcbh.getControlButtonHandler();
+                if (cbh != null) cbh.checkButtonStatus();
             }
         }
 
@@ -56,12 +57,10 @@ public class TabListener implements ActionBar.TabListener  {
 
 
     @Override
-    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {}
 
     @Override
-    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
-    }
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {}
 
 
 }

@@ -38,7 +38,7 @@ import uk.org.platitudes.wipe.file.FileHolder;
  *
  * Layout:   file_list_with_title_and_button.xml
  */
-public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemLongClickListener, View.OnClickListener {
+public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemLongClickListener, View.OnClickListener, ControlButtonHandler.GetControlButtonHandler {
 
     /**
      * The ListView is defined in file_list_with_title.xml.
@@ -65,7 +65,11 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
      * See ModifiedSimpleAdapter for a description of this.
      */
     private ArrayList<HashMap<String, Object>> theData;
-    public ControlButtonHandler mControlButtonHandler;
+
+    /**
+     * Handler for the button that hides/shows the ActionBar.
+     */
+    private ControlButtonHandler mControlButtonHandler;
 
     // Is the no-args constructor compulsory?
     // That would explain why a factory is used to create instances.
@@ -218,5 +222,10 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
         showToast("OK - delete files");
         DeleteFilesBackgroundTask dfbt = new DeleteFilesBackgroundTask();
         dfbt.execute(theData);
+    }
+
+    @Override
+    public ControlButtonHandler getControlButtonHandler() {
+        return mControlButtonHandler;
     }
 }
