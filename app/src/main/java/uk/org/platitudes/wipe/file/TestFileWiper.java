@@ -47,30 +47,30 @@ public class TestFileWiper implements FileWiper {
         deleteFilesBackgroundTask.currentFileName = f.getName();
 
         // An ordinary file to wipe
-        long fileSize = f.length();
-        long bytesWiped = 0;
+        ProgressCounter counter = new ProgressCounter(f.length());
+        counter.setParentCounter(deleteFilesBackgroundTask.progressCounter);
 
-        MainTabActivity.sTheMainActivity.mDeleteLog.add("TEST Wiping "+deleteFilesBackgroundTask.currentFileName+" size "+fileSize);
+        deleteFilesBackgroundTask.addLogMessage("TEST Wiping " + deleteFilesBackgroundTask.currentFileName + " size " + f.length());
 
-        while (bytesWiped < fileSize) {
+        while (!counter.isFinished()) {
 
-            deleteFilesBackgroundTask.currentFileName = f.getName()+" "+bytesWiped+"/"+fileSize;
-            deleteFilesBackgroundTask.progress(bytesWiped);
+            deleteFilesBackgroundTask.currentFileName = f.getName()+" "+counter.getCurrentValue()+"/"+counter.getMaxValue();
 
             try {
                 Thread.sleep(testModeSleepTime);
             } catch (InterruptedException e) {
                 Log.e("app", "Background delete", e);
             }
-            bytesWiped += 8192;
+            counter.add(8192);
+            deleteFilesBackgroundTask.progress(counter.getProgressPercent());
             if (deleteFilesBackgroundTask.isCancelled()) {
-                MainTabActivity.sTheMainActivity.mDeleteLog.add ("Delete cancelled");
+                deleteFilesBackgroundTask.addLogMessage ("Delete cancelled");
                 break;
             }
         }
 
-        deleteFilesBackgroundTask.bytesLeftToWipe -= f.length();
-        deleteFilesBackgroundTask.progress(0);
+        counter.finish();
+        deleteFilesBackgroundTask.progress(counter.getProgressPercent());
 
     }
 }

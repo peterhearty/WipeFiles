@@ -45,8 +45,9 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
     /*
      * Hopefully next 2 are self explanatory.
      */
-    long bytesLeftToWipe;
-    private long maxBytesToWipe;
+//    long bytesLeftToWipe;
+//    private long maxBytesToWipe;
+    protected ProgressCounter progressCounter;
 
     /**
      * The file currently being wiped is shown in the progress dialog.
@@ -71,6 +72,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
         mProgressDialog.setOnCancelListener(this);
 
         mFileWiper = new TestFileWiper(this);
+        progressCounter = new ProgressCounter(0);
     }
 
     /**
@@ -80,7 +82,8 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
      */
     private void addFileToByteCount (File f) {
         if (f.isFile()) {
-            bytesLeftToWipe += f.length();
+            progressCounter.addToMax(f.length());
+//            bytesLeftToWipe += f.length();
             return;
         }
 
@@ -102,7 +105,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
      * @param fileList  The list of files to be deleted.
      */
     private void calculateBytesToWipe (ArrayList<HashMap<String, Object>> fileList) {
-        bytesLeftToWipe = 0;
+//        bytesLeftToWipe = 0;
         for (HashMap<String, Object> hashMap : fileList) {
             FileHolder fh = (FileHolder) hashMap.get(ModifiedSimpleAdapter.from[1]);
             File f = fh.file;
@@ -122,10 +125,13 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
 
     /**
      * Called by the FileWiper to update progress.
+     * Executed in background thread.
      */
-    void progress (long bytesWiped) {
-        int p = (int) ((maxBytesToWipe-bytesLeftToWipe+bytesWiped)*100/maxBytesToWipe);
-        publishProgress(p);
+    void progress (int percent) {
+//        int p = (int) ((maxBytesToWipe-bytesLeftToWipe+bytesWiped)*100/maxBytesToWipe);
+//        int p = progressCounter.getProgressPercent();
+        // The following sends a message to the UI thread and invokes onProgressUpdate (p)
+        publishProgress(percent);
     }
 
     private void wipeFile (File f) {
@@ -139,14 +145,14 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
 
         // Must be a directory
         File[] files = f.listFiles();
-        MainTabActivity.sTheMainActivity.mDeleteLog.add ("Entering directory "+f.getName());
+        addLogMessage ("Entering directory "+f.getName());
         for (File fileFromDirectory : files) {
 
             // We're already processing a directory. If we encounter another directory then
             // make sure recursion is allowed.
             if (!directoryRecursionAllowed() && fileFromDirectory.isDirectory()) {
                 currentFileName = fileFromDirectory.getName();
-                MainTabActivity.sTheMainActivity.mDeleteLog.add("Tree wipe disabled, skipping '"+currentFileName+"'");
+                addLogMessage("Tree wipe disabled, skipping '"+ currentFileName + "'");
                 continue;
             }
 
@@ -155,15 +161,22 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
                 break;
             }
         }
-        MainTabActivity.sTheMainActivity.mDeleteLog.add ("Leaving directory "+f.getName());
+        addLogMessage("Leaving directory " + f.getName());
     }
 
+    public void addLogMessage (String s) {
+        MainTabActivity.sTheMainActivity.mDeleteLog.add (s);
+    }
+
+    /**
+     * Executed in background thread.
+     */
     @Override
     @SafeVarargs
     protected final Void doInBackground(ArrayList<HashMap<String, Object>>... params) {
         ArrayList<HashMap<String, Object>> theData = params[0];
         calculateBytesToWipe (theData);
-        maxBytesToWipe = bytesLeftToWipe;
+//        maxBytesToWipe = bytesLeftToWipe;
         for (HashMap<String, Object> hashMap : theData) {
             FileHolder fh = (FileHolder) hashMap.get(ModifiedSimpleAdapter.from[1]);
             File f = fh.file;
@@ -186,7 +199,14 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
         mProgressDialog.hide();
     }
 
+    /**
+     * Executed on the UI thread. Invoked via a msg from the background thread
+     * when "publisProgress" is called.
+     */
     protected void onProgressUpdate(Integer... progress) {
+        // Up until this point the meaning of "progress" is entirely application defined.
+        // ProgressDialog seems to interpret it as a percentage. It's docs says the
+        // range is 0..10000 but that number doesn't appear anywhere in the code.
         mProgressDialog.setMessage(currentFileName);
         mProgressDialog.setProgress(progress[0]);
     }
