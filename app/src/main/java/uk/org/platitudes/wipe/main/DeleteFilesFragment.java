@@ -205,7 +205,7 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
         Button b = (Button) v;
         if (b == mTestWipeButton) {
             // perform test wipe
-            DeleteFilesBackgroundTask dfbt = new DeleteFilesBackgroundTask();
+            DeleteFilesBackgroundTask dfbt = new DeleteFilesBackgroundTask(true);
             dfbt.execute(theData);
         } else {
             // must be the real wipe - confirm first
@@ -220,7 +220,7 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
      */
     public void startFileDeletion () {
         showToast("OK - delete files");
-        DeleteFilesBackgroundTask dfbt = new DeleteFilesBackgroundTask();
+        DeleteFilesBackgroundTask dfbt = new DeleteFilesBackgroundTask(false);
         dfbt.execute(theData);
     }
 

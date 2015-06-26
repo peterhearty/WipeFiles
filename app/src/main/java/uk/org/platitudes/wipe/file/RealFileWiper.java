@@ -35,8 +35,8 @@ public class RealFileWiper implements  FileWiper {
     public RealFileWiper (DeleteFilesBackgroundTask dfbt) {
         deleteFilesBackgroundTask = dfbt;
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainTabActivity.sTheMainActivity);
-        numberPasses = sharedPref.getInt("number_passes", 1);
-        performZeroWipe = sharedPref.getBoolean("zero_wipe", false);
+        numberPasses = sharedPref.getInt("number_passes", 2);
+        performZeroWipe = sharedPref.getBoolean("zero_wipe", true);
         writeBlockSize = sharedPref.getInt("block_size", 8192);
         if (writeBlockSize < 0 || writeBlockSize > 65536)
             writeBlockSize = 8192;
@@ -44,7 +44,7 @@ public class RealFileWiper implements  FileWiper {
         randomBlock = new byte[writeBlockSize];
     }
 
-    private void wipePass (RandomAccessFile raf, ProgressCounter counter, boolean randomPass) throws IOException {
+    private void wipePass (String prefixString, RandomAccessFile raf, ProgressCounter counter, boolean randomPass) throws IOException {
         raf.seek(0);
 
         // The random numbers don't have to be cryptographically strong.
@@ -58,6 +58,7 @@ public class RealFileWiper implements  FileWiper {
             writeBlock = zeroBlock;
 
         while (!counter.isFinished()) {
+            deleteFilesBackgroundTask.currentFileName = prefixString+" "+counter.getCurrentValue()+"/"+counter.getMaxValue();
             long writeSize = writeBlockSize;
             long bytesLeft = counter.getMaxValue() - counter.getCurrentValue();
             if (bytesLeft < writeBlockSize)
@@ -70,7 +71,12 @@ public class RealFileWiper implements  FileWiper {
             // According to javadoc "output operations write bytes starting at the file pointer
             // and advance the file pointer past the bytes written". so no need to move the file
             // pointer.
-//            raf.write(writeBlock, 0, (int) writeSize);
+            raf.write(writeBlock, 0, (int) writeSize);
+//            try {
+//                Thread.sleep(1);
+//            } catch (Exception e) {
+//
+//            }
             counter.add(writeSize);
             deleteFilesBackgroundTask.progress(counter.getProgressPercent());
 
@@ -79,6 +85,7 @@ public class RealFileWiper implements  FileWiper {
                 break;
             }
         }
+        deleteFilesBackgroundTask.addLogMessage(prefixString+"complete");
 
         counter.finish();
     }
@@ -105,9 +112,11 @@ public class RealFileWiper implements  FileWiper {
                     // Wipe with zeros first
                     singlePassCounter.multiplyCompressFactor(2);
                     ProgressCounter zeroCounter = singlePassCounter.copy();
-                    wipePass(raf, zeroCounter, false);
+                    String progressPrefixString = "PASS "+(i+1)+" ZEROES "+f.getName()+" ";
+                    wipePass(progressPrefixString, raf, zeroCounter, false);
                 }
-                wipePass(raf, singlePassCounter, true);
+                String progressPrefixString = "PASS "+(i+1)+" RANDOMS "+f.getName()+" ";
+                wipePass(progressPrefixString, raf, singlePassCounter, true);
             } catch (Exception e) {
                 MainTabActivity.sTheMainActivity.mDeleteLog.add ("Exception: "+e.toString());
                 return;
@@ -117,6 +126,8 @@ public class RealFileWiper implements  FileWiper {
         fileProgressCounter.finish();
         deleteFilesBackgroundTask.progress(fileProgressCounter.getProgressPercent());
 
-        deleteFilesBackgroundTask.addLogMessage("Wipe complete: " + deleteFilesBackgroundTask.currentFileName);
+        deleteFilesBackgroundTask.addLogMessage("Wipe complete: " + f.getName());
+
+        //TODO - rename file
     }
 }

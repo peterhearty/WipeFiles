@@ -71,6 +71,9 @@ public class TestFileWiper implements FileWiper {
 
         counter.finish();
         deleteFilesBackgroundTask.progress(counter.getProgressPercent());
+        if (!deleteFilesBackgroundTask.isCancelled()){
+            deleteFilesBackgroundTask.addLogMessage("TEST wipe complete " + deleteFilesBackgroundTask.currentFileName);
+        }
 
     }
 }

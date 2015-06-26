@@ -1,13 +1,10 @@
 /**
  * This source code is not owned by anybody. You can can do what you like with it.
- *
- * @author  Peter Hearty
- * @date    April 2015
  */
 package uk.org.platitudes.wipe.file;
 
 /**
- * Created by pete on 25/06/15.
+ *
  */
 public class ProgressCounter {
 
@@ -89,7 +86,7 @@ public class ProgressCounter {
 
     public void updateParent () {
         if (parentCounter == null) return;
-        parentCounter.currentValue += maxValue;
+        parentCounter.currentValue += maxValue / compressFactor;
     }
 
     public boolean isFinished () {return finished;}

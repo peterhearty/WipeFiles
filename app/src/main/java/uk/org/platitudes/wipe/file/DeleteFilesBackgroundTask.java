@@ -59,6 +59,13 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
      */
     private FileWiper       mFileWiper;
 
+    public DeleteFilesBackgroundTask (boolean test) {
+        if (test)
+            mFileWiper = new TestFileWiper(this);
+        else
+            mFileWiper = new RealFileWiper(this);
+    }
+
     /**
      * Mostly sets up the progress dialog.
      */
@@ -71,7 +78,6 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
         mProgressDialog.show();
         mProgressDialog.setOnCancelListener(this);
 
-        mFileWiper = new TestFileWiper(this);
         progressCounter = new ProgressCounter(0);
     }
 
@@ -140,6 +146,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
 
         if (f.isFile()) {
             mFileWiper.wipeFile(f);
+            //TODO - remove from file list
             return;
         }
 
