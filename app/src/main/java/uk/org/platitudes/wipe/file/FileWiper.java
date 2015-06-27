@@ -15,5 +15,6 @@ import java.io.File;
 public interface FileWiper {
 
     public void wipeFile (File f);
+    public void updateByteCountWithPassCount (ProgressCounter counter);
 
 }

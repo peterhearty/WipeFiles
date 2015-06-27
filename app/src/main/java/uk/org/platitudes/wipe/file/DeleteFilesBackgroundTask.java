@@ -89,7 +89,6 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
     private void addFileToByteCount (File f) {
         if (f.isFile()) {
             progressCounter.addToMax(f.length());
-//            bytesLeftToWipe += f.length();
             return;
         }
 
@@ -117,6 +116,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
             File f = fh.file;
             addFileToByteCount (f);
         }
+        mFileWiper.updateByteCountWithPassCount(progressCounter);
     }
 
     /**
@@ -146,13 +146,12 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
 
         if (f.isFile()) {
             mFileWiper.wipeFile(f);
-            //TODO - remove from file list
             return;
         }
 
         // Must be a directory
         File[] files = f.listFiles();
-        addLogMessage ("Entering directory "+f.getName());
+        addLogMessage ("Entering directory "+f.getAbsolutePath());
         for (File fileFromDirectory : files) {
 
             // We're already processing a directory. If we encounter another directory then
@@ -181,6 +180,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
     @Override
     @SafeVarargs
     protected final Void doInBackground(ArrayList<HashMap<String, Object>>... params) {
+        MainTabActivity.sTheMainActivity.mDeleteLog.clear();
         ArrayList<HashMap<String, Object>> theData = params[0];
         calculateBytesToWipe (theData);
 //        maxBytesToWipe = bytesLeftToWipe;

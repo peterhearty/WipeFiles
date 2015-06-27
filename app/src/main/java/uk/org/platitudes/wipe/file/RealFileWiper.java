@@ -20,6 +20,7 @@ import uk.org.platitudes.wipe.main.MainTabActivity;
  * Performs a real wipe of a file.
  */
 public class RealFileWiper implements  FileWiper {
+
     /**
      * The thread that uses this helper class to perform a test delete.
      */
@@ -94,23 +95,17 @@ public class RealFileWiper implements  FileWiper {
     public void wipeFile(File f) {
         deleteFilesBackgroundTask.currentFileName = f.getName();
 
-        // An ordinary file to wipe
-        ProgressCounter fileProgressCounter = new ProgressCounter(f.length());
-        fileProgressCounter.setParentCounter(deleteFilesBackgroundTask.progressCounter);
-
         deleteFilesBackgroundTask.addLogMessage("Wiping " + deleteFilesBackgroundTask.currentFileName + " size " + f.length());
 
         for (int i=0; i < numberPasses; i++) {
             ProgressCounter singlePassCounter = new ProgressCounter(f.length());
-            singlePassCounter.setParentCounter(fileProgressCounter);
-            singlePassCounter.multiplyCompressFactor(numberPasses);
+            singlePassCounter.setParentCounter(deleteFilesBackgroundTask.progressCounter);
 
             String readWriteMode = "rw"; // "rws" does synchronous writes, could make this an option.
             try {
                 RandomAccessFile raf = new RandomAccessFile(f, readWriteMode);
                 if (performZeroWipe) {
                     // Wipe with zeros first
-                    singlePassCounter.multiplyCompressFactor(2);
                     ProgressCounter zeroCounter = singlePassCounter.copy();
                     String progressPrefixString = "PASS "+(i+1)+" ZEROES "+f.getName()+" ";
                     wipePass(progressPrefixString, raf, zeroCounter, false);
@@ -123,11 +118,17 @@ public class RealFileWiper implements  FileWiper {
             }
         }
 
-        fileProgressCounter.finish();
-        deleteFilesBackgroundTask.progress(fileProgressCounter.getProgressPercent());
-
         deleteFilesBackgroundTask.addLogMessage("Wipe complete: " + f.getName());
 
         //TODO - rename file
+    }
+
+    @Override
+    public void updateByteCountWithPassCount(ProgressCounter counter) {
+        long counterMaxValue = counter.getMaxValue();
+        counterMaxValue *= numberPasses;
+        if (performZeroWipe)
+            counterMaxValue *= 2;
+        counter.setMaxValue(counterMaxValue);
     }
 }

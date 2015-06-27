@@ -43,6 +43,10 @@ public class TestFileWiper implements FileWiper {
     }
 
     @Override
+    public void updateByteCountWithPassCount(ProgressCounter counter) {}
+
+
+    @Override
     public void wipeFile(File f) {
         deleteFilesBackgroundTask.currentFileName = f.getName();
 
@@ -50,7 +54,7 @@ public class TestFileWiper implements FileWiper {
         ProgressCounter counter = new ProgressCounter(f.length());
         counter.setParentCounter(deleteFilesBackgroundTask.progressCounter);
 
-        deleteFilesBackgroundTask.addLogMessage("TEST Wiping " + deleteFilesBackgroundTask.currentFileName + " size " + f.length());
+        deleteFilesBackgroundTask.addLogMessage("TEST Wiping " + f.getName() + " size " + f.length());
 
         while (!counter.isFinished()) {
 
@@ -61,7 +65,7 @@ public class TestFileWiper implements FileWiper {
             } catch (InterruptedException e) {
                 Log.e("app", "Background delete", e);
             }
-            counter.add(8192);
+            counter.add(65536);
             deleteFilesBackgroundTask.progress(counter.getProgressPercent());
             if (deleteFilesBackgroundTask.isCancelled()) {
                 deleteFilesBackgroundTask.addLogMessage ("Delete cancelled");
@@ -72,7 +76,7 @@ public class TestFileWiper implements FileWiper {
         counter.finish();
         deleteFilesBackgroundTask.progress(counter.getProgressPercent());
         if (!deleteFilesBackgroundTask.isCancelled()){
-            deleteFilesBackgroundTask.addLogMessage("TEST wipe complete " + deleteFilesBackgroundTask.currentFileName);
+            deleteFilesBackgroundTask.addLogMessage("TEST wipe complete " + f.getName());
         }
 
     }
