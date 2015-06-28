@@ -57,7 +57,9 @@ public class SettingsActivity extends PreferenceActivity {
         bindPreferenceSummaryToValue(findPreference("test_mode_sleep_time_key"));
         bindPreferenceSummaryToValue(findPreference(TEXT_SIZE_KEY));
         bindPreferenceSummaryToValue(findPreference(LOG_SIZE_KEY));
-        bindPreferenceSummaryToValue(findPreference(HIDE_TABS_KEY));
+        bindPreferenceSummaryToValue(findPreference("zero_wipe"));
+        bindPreferenceSummaryToValue(findPreference("number_passes"));
+        bindPreferenceSummaryToValue(findPreference("block_size"));
     }
 
     /**
