@@ -13,7 +13,7 @@
         <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
         <EditTextPreference
             android:key="test_mode_sleep_time_key"
-            android:title="Sleep time"
+            android:title="Test mode sleep time"
             android:defaultValue="10"
             android:selectAllOnFocus="true"
             android:inputType="numberDecimal"
@@ -62,6 +62,40 @@
             android:summary="Files and sub-directories inside directories will be deleted"
             android:maxLines="4"
             android:defaultValue="false" />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Wipe parameters">
+
+        <CheckBoxPreference
+            android:key="zero_wipe"
+            android:title="Wipe with zeros"
+            android:summary="Wipes with zeroes before wiping with randoms"
+            android:maxLines="4"
+            android:defaultValue="false" />
+
+        <EditTextPreference
+            android:key="number_passes"
+            android:title="Number of passes"
+            android:defaultValue="1"
+            android:summary="The number of write passes. Zero wipes effectively doubles this."
+            android:selectAllOnFocus="true"
+            android:inputType="numberDecimal"
+            android:capitalize="none"
+            android:maxLines="4"
+            />
+
+        <EditTextPreference
+            android:key="block_size"
+            android:title="Write block size"
+            android:defaultValue="8192"
+            android:summary="The size of blocks used to wipe the file"
+            android:selectAllOnFocus="true"
+            android:inputType="numberDecimal"
+            android:capitalize="none"
+            android:maxLines="4"
+            />
 
     </PreferenceCategory>
 </PreferenceScreen>
