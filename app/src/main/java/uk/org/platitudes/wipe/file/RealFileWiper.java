@@ -8,6 +8,7 @@ package uk.org.platitudes.wipe.file;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,30 +20,59 @@ import uk.org.platitudes.wipe.main.MainTabActivity;
 /**
  * Performs a real wipe of a file.
  */
-public class RealFileWiper implements  FileWiper {
+public class RealFileWiper {
 
     /**
      * The thread that uses this helper class to perform a test delete.
      */
     private DeleteFilesBackgroundTask deleteFilesBackgroundTask;
 
+    /**
+     * Used when testing the app to simulate time passing while files are pretended to be deleted.
+     */
+    private int testModeSleepTime;
+
     private int numberPasses;
     private boolean performZeroWipe;
     private boolean performRandomWipe;
+    private boolean testMode;
     private int writeBlockSize;
     private byte[] zeroBlock;
     private byte[] randomBlock;
 
-    public RealFileWiper (DeleteFilesBackgroundTask dfbt) {
+    private int getIntPreference (String s, int min, int max, int defaultValue) {
+        int result = defaultValue;
+        try {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainTabActivity.sTheMainActivity);
+            String defaultString = Integer.toString(defaultValue);
+            String stringVal = sharedPref.getString(s, defaultString);
+            result = Integer.parseInt(stringVal);
+            if (result < min || result > max)
+                result = defaultValue;
+        } catch (Exception e) {
+            Log.e("Wipe", "Getting preference", e);
+        }
+        return result;
+    }
+
+    public RealFileWiper (DeleteFilesBackgroundTask dfbt, boolean test) {
         deleteFilesBackgroundTask = dfbt;
+        testMode = test;
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainTabActivity.sTheMainActivity);
-        numberPasses = sharedPref.getInt("number_passes", 2);
+        numberPasses = getIntPreference("number_passes", 1, 32, 1);
         performZeroWipe = sharedPref.getBoolean("zero_wipe", true);
-        writeBlockSize = sharedPref.getInt("block_size", 8192);
-        if (writeBlockSize < 0 || writeBlockSize > 65536)
-            writeBlockSize = 8192;
+        writeBlockSize = getIntPreference("block_size", 512, 65536, 8192);
+
+        String testModeSleepTimeString = sharedPref.getString("test_mode_sleep_time_key", "10");
+        testModeSleepTime = getIntPreference("test_mode_sleep_time_key", 1, 65536, 10);
+
         zeroBlock = new byte[writeBlockSize];
         randomBlock = new byte[writeBlockSize];
+    }
+
+    private void renamefile (File f) {
+        String currentName = f.getName();
+
     }
 
     private void wipePass (String prefixString, RandomAccessFile raf, ProgressCounter counter, boolean randomPass) throws IOException {
@@ -72,12 +102,17 @@ public class RealFileWiper implements  FileWiper {
             // According to javadoc "output operations write bytes starting at the file pointer
             // and advance the file pointer past the bytes written". so no need to move the file
             // pointer.
-            raf.write(writeBlock, 0, (int) writeSize);
-//            try {
-//                Thread.sleep(1);
-//            } catch (Exception e) {
-//
-//            }
+            if (testMode) {
+                try {
+                    Thread.sleep(testModeSleepTime);
+                } catch (Exception e) {
+                    Log.e("app", "Background delete", e);
+                }
+
+            } else {
+                // perform a real wipe
+                raf.write(writeBlock, 0, (int) writeSize);
+            }
             counter.add(writeSize);
             deleteFilesBackgroundTask.progress(counter.getProgressPercent());
 
@@ -91,7 +126,6 @@ public class RealFileWiper implements  FileWiper {
         counter.finish();
     }
 
-    @Override
     public void wipeFile(File f) {
         deleteFilesBackgroundTask.currentFileName = f.getName();
 
@@ -112,6 +146,7 @@ public class RealFileWiper implements  FileWiper {
                 }
                 String progressPrefixString = "PASS "+(i+1)+" RANDOMS "+f.getName()+" ";
                 wipePass(progressPrefixString, raf, singlePassCounter, true);
+                raf.close();
             } catch (Exception e) {
                 MainTabActivity.sTheMainActivity.mDeleteLog.add ("Exception: "+e.toString());
                 return;
@@ -123,7 +158,6 @@ public class RealFileWiper implements  FileWiper {
         //TODO - rename file
     }
 
-    @Override
     public void updateByteCountWithPassCount(ProgressCounter counter) {
         long counterMaxValue = counter.getMaxValue();
         counterMaxValue *= numberPasses;

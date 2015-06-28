@@ -57,13 +57,10 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
     /**
      * Used to wipe files - either a TestFileWiper or a RealFileWiper.
      */
-    private FileWiper       mFileWiper;
+    private RealFileWiper       mFileWiper;
 
     public DeleteFilesBackgroundTask (boolean test) {
-        if (test)
-            mFileWiper = new TestFileWiper(this);
-        else
-            mFileWiper = new RealFileWiper(this);
+        mFileWiper = new RealFileWiper(this, test);
     }
 
     /**
