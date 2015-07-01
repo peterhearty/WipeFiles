@@ -59,7 +59,13 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
      */
     private RealFileWiper       mFileWiper;
 
+    /**
+     * TRUE if this is a test delete run.
+     */
+    private boolean             mTestMode;
+
     public DeleteFilesBackgroundTask (boolean test) {
+        mTestMode = test;
         mFileWiper = new RealFileWiper(this, test);
     }
 
@@ -84,6 +90,9 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
      * @param f     A file to be wiped or a directory of files to be wiped.
      */
     private void addFileToByteCount (File f) {
+        if (isCancelled() || !f.exists())
+            return;
+
         if (f.isFile()) {
             progressCounter.addToMax(f.length());
             return;
@@ -138,7 +147,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
     }
 
     private void wipeFile (File f) {
-        if (isCancelled())
+        if (isCancelled() || !f.exists())
             return;
 
         if (f.isFile()) {
@@ -168,7 +177,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
     }
 
     public void addLogMessage (String s) {
-        MainTabActivity.sTheMainActivity.mDeleteLog.add (s);
+        MainTabActivity.sTheMainActivity.mDeleteLog.add(s);
     }
 
     /**
@@ -185,7 +194,10 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
             FileHolder fh = (FileHolder) hashMap.get(ModifiedSimpleAdapter.from[1]);
             File f = fh.file;
             wipeFile (f);
-            // TODO - have to remove file from list, except when doing a test run.
+            if (!mTestMode) {
+                theData.remove(hashMap);
+                // TODO - have to remove file from list, except when doing a test run.
+            }
             if (isCancelled()) {
                 Log.i("bgrnd", "file delete cancelled");
                 break;
@@ -217,6 +229,11 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
 
     protected void onPostExecute(Void result) {
         mProgressDialog.hide();
+
+        // following line redraws the delete list (which should now be empty)
+        MainTabActivity.sTheMainActivity.redrawBothLists(null);
+
+        //TODO - HAVE TO RESET THE FILE SELECTION LIST TO THE TOP LEVEL DIRECTORY
     }
 
     @Override

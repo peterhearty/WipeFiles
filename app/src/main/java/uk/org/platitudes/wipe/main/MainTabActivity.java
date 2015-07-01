@@ -165,7 +165,8 @@ public class MainTabActivity extends ActionBarActivity {
     }
 
     public void redrawBothLists (String newtextSize) {
-        mTextSize = Integer.valueOf(newtextSize);
+        if (newtextSize != null)
+            mTextSize = Integer.valueOf(newtextSize);
         mSectionsPagerAdapter.selectFilesFragment.resetAdapter();
         mSectionsPagerAdapter.deleteFilesFragment.resetAdapter();
     }

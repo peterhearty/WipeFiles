@@ -1,8 +1,5 @@
 /**
  * This source code is not owned by anybody. You can can do what you like with it.
- *
- * @author  Peter Hearty
- * @date    April 2015
  */
 package uk.org.platitudes.wipe.file;
 
@@ -32,6 +29,8 @@ public class RealFileWiper {
      */
     private int testModeSleepTime;
 
+    private static final String sAllowedFilenameChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
     private int numberPasses;
     private boolean performZeroWipe;
     private boolean performRandomWipe;
@@ -39,6 +38,7 @@ public class RealFileWiper {
     private int writeBlockSize;
     private byte[] zeroBlock;
     private byte[] randomBlock;
+    private static final String sReadWriteMode = "rw"; // "rws" does synchronous writes, could make this an option.
 
     private int getIntPreference (String s, int min, int max, int defaultValue) {
         int result = defaultValue;
@@ -72,15 +72,57 @@ public class RealFileWiper {
 
     private void renamefile (File f) {
         String currentName = f.getName();
+        String directory = f.getParent();
+        Random r = new Random();
 
+        for (int j=0; j<3; j++) {
+            // We try the rename several times in case the target name already exists.
+
+            char[] newName = new char[currentName.length()];
+            for (int i=0; i<newName.length; i++) {
+                newName[i] = sAllowedFilenameChars.charAt(r.nextInt(sAllowedFilenameChars.length()));
+            }
+
+            String newFileName = new String(newName);
+            String newPathName = directory+File.separator+newFileName;
+            File newFile = new File(newPathName);
+
+            String message = "Renaming "+currentName+" to "+newFileName;
+            deleteFilesBackgroundTask.addLogMessage(message);
+            if (testMode) {
+                deleteFilesBackgroundTask.addLogMessage("TEST - skipping rename");
+                return;
+            } else {
+                boolean renameWorked  = f.renameTo(newFile);
+                if (renameWorked) {
+                    deleteFilesBackgroundTask.addLogMessage("Rename succeeded - attempting delete");
+                    boolean deleteWorked = newFile.delete();
+                    if (deleteWorked) {
+                        deleteFilesBackgroundTask.addLogMessage("Delete succeeded");
+                    }
+                    break;
+                }
+            }
+        }
     }
 
-    private void wipePass (String prefixString, RandomAccessFile raf, ProgressCounter counter, boolean randomPass) throws IOException {
-        raf.seek(0);
+    private void closeRandomAccessFile (RandomAccessFile raf) {
+        if (raf == null) return;
+        try {
+            raf.close();
+        } catch (IOException ioe) {
+            deleteFilesBackgroundTask.addLogMessage("Closing random access file " + ioe);
+        }
+    }
+
+    private void wipePass (String prefixString, File f, ProgressCounter counter, boolean randomPass) {
+        if (testMode) {
+            prefixString = "TEST "+prefixString;
+        }
 
         // The random numbers don't have to be cryptographically strong.
         // Plain old vanilla Random is good enough.
-        // This won't get used on a zero fill pass.
+        // This won't get used on a zero fill or a test pass.
         Random randomNumberGenretaor = new Random();
 
         // By default, assume the random block of data will be used.
@@ -88,40 +130,50 @@ public class RealFileWiper {
         if (!randomPass)
             writeBlock = zeroBlock;
 
-        while (!counter.isFinished()) {
-            deleteFilesBackgroundTask.currentFileName = prefixString+" "+counter.getCurrentValue()+"/"+counter.getMaxValue();
-            long writeSize = writeBlockSize;
-            long bytesLeft = counter.getMaxValue() - counter.getCurrentValue();
-            if (bytesLeft < writeBlockSize)
-                // limit the size of the final write
-                writeSize = bytesLeft;
-            if (randomPass) {
-                // wipe with random data
-                randomNumberGenretaor.nextBytes(randomBlock);
-            }
-            // According to javadoc "output operations write bytes starting at the file pointer
-            // and advance the file pointer past the bytes written". so no need to move the file
-            // pointer.
-            if (testMode) {
-                try {
-                    Thread.sleep(testModeSleepTime);
-                } catch (Exception e) {
-                    Log.e("app", "Background delete", e);
+        RandomAccessFile raf = null;
+        try {
+            raf = new RandomAccessFile(f, sReadWriteMode);
+            raf.seek(0);
+
+            while (!counter.isFinished()) {
+                deleteFilesBackgroundTask.currentFileName = prefixString+" "+counter.getCurrentValue()+"/"+counter.getMaxValue();
+                long writeSize = writeBlockSize;
+                long bytesLeft = counter.getMaxValue() - counter.getCurrentValue();
+                if (bytesLeft < writeBlockSize)
+                    // limit the size of the final write
+                    writeSize = bytesLeft;
+                if (randomPass) {
+                    // wipe with random data
+                    randomNumberGenretaor.nextBytes(randomBlock);
                 }
+                // According to javadoc "output operations write bytes starting at the file pointer
+                // and advance the file pointer past the bytes written". so no need to move the file
+                // pointer.
+                if (testMode) {
+                    try {
+                        Thread.sleep(testModeSleepTime);
+                    } catch (Exception e) {
+                        deleteFilesBackgroundTask.addLogMessage("TEST sleep "+e);
+                    }
+                } else {
+                    // perform a real wipe
+                    raf.write(writeBlock, 0, (int) writeSize);
+                }
+                counter.add(writeSize);
+                deleteFilesBackgroundTask.progress(counter.getProgressPercent());
 
-            } else {
-                // perform a real wipe
-                raf.write(writeBlock, 0, (int) writeSize);
+                if (deleteFilesBackgroundTask.isCancelled()) {
+                    deleteFilesBackgroundTask.addLogMessage ("Delete cancelled");
+                    break;
+                }
             }
-            counter.add(writeSize);
-            deleteFilesBackgroundTask.progress(counter.getProgressPercent());
-
-            if (deleteFilesBackgroundTask.isCancelled()) {
-                deleteFilesBackgroundTask.addLogMessage ("Delete cancelled");
-                break;
-            }
+        } catch (IOException ioe) {
+            deleteFilesBackgroundTask.addLogMessage(prefixString + ioe);
+        } finally {
+            closeRandomAccessFile(raf);
         }
-        deleteFilesBackgroundTask.addLogMessage(prefixString+"complete");
+
+        deleteFilesBackgroundTask.addLogMessage(prefixString + "complete");
 
         counter.finish();
     }
@@ -131,31 +183,30 @@ public class RealFileWiper {
 
         deleteFilesBackgroundTask.addLogMessage("Wiping " + deleteFilesBackgroundTask.currentFileName + " size " + f.length());
 
-        for (int i=0; i < numberPasses; i++) {
+        for (int i = 0; i < numberPasses; i++) {
             ProgressCounter singlePassCounter = new ProgressCounter(f.length());
             singlePassCounter.setParentCounter(deleteFilesBackgroundTask.progressCounter);
 
-            String readWriteMode = "rw"; // "rws" does synchronous writes, could make this an option.
-            try {
-                RandomAccessFile raf = new RandomAccessFile(f, readWriteMode);
-                if (performZeroWipe) {
-                    // Wipe with zeros first
-                    ProgressCounter zeroCounter = singlePassCounter.copy();
-                    String progressPrefixString = "PASS "+(i+1)+" ZEROES "+f.getName()+" ";
-                    wipePass(progressPrefixString, raf, zeroCounter, false);
-                }
-                String progressPrefixString = "PASS "+(i+1)+" RANDOMS "+f.getName()+" ";
-                wipePass(progressPrefixString, raf, singlePassCounter, true);
-                raf.close();
-            } catch (Exception e) {
-                MainTabActivity.sTheMainActivity.mDeleteLog.add ("Exception: "+e.toString());
-                return;
+            if (performZeroWipe) {
+                // Wipe with zeros first
+                ProgressCounter zeroCounter = singlePassCounter.copy();
+                String progressPrefixString = "PASS " + (i + 1) + " ZEROES " + f.getName() + " ";
+                wipePass(progressPrefixString, f, zeroCounter, false);
             }
+            String progressPrefixString = "PASS " + (i + 1) + " RANDOMS " + f.getName() + " ";
+            wipePass(progressPrefixString, f, singlePassCounter, true);
         }
 
-        deleteFilesBackgroundTask.addLogMessage("Wipe complete: " + f.getName());
+        renamefile(f);
 
-        //TODO - rename file
+        try {
+        } catch (Exception e) {
+            deleteFilesBackgroundTask.addLogMessage("Exception: " + e.toString());
+            return;
+        }
+
+
+        deleteFilesBackgroundTask.addLogMessage("Wipe complete: " + f.getName());
     }
 
     public void updateByteCountWithPassCount(ProgressCounter counter) {
