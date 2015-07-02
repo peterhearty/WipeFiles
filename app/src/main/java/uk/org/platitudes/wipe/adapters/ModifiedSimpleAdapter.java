@@ -4,15 +4,25 @@
 package uk.org.platitudes.wipe.adapters;
 
 import android.app.Activity;
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,9 +78,45 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
         // and the SelectFiles and DeleteFiles both take it from here.
     }
 
+    private static HashMap<String, Drawable> iconCache = new HashMap<>();
+
+    private void setIcon (ImageView icon, File f) {
+        // http://stackoverflow.com/questions/8589645/how-to-determine-mime-type-of-file-in-android
+        Uri u = Uri.fromFile(f);
+        String uriString = u.toString();
+        String extension = MimeTypeMap.getFileExtensionFromUrl(uriString);
+
+        Drawable mimeIcon = iconCache.get(extension);
+        if (mimeIcon != null) {
+            icon.setImageDrawable(mimeIcon);
+            return;
+        }
+
+        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(u);
+
+        PackageManager pm = mContext.getPackageManager();
+        List<ResolveInfo> matches = pm.queryIntentActivities(intent, 0);
+        if (matches.size() == 0) {
+            intent.setType(type);
+            matches = pm.queryIntentActivities(intent, 0);
+        }
+
+        if (matches.size() > 0) {
+            mimeIcon = matches.get(0).loadIcon(pm);
+            iconCache.put(extension, mimeIcon);
+            icon.setImageDrawable(mimeIcon);
+            return;
+        }
+
+        icon.setImageResource(R.drawable.document_multiple);
+
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        View result = null;
+        View result;
         if (convertView != null) {
             // ListView recycles views. We have to undo any modifications
             // that ListView doesn't know about.
@@ -97,9 +143,12 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
 
         ImageView myIcon = (ImageView) result.findViewById(R.id.myIcon1);
         if (col2.file.isDirectory()) {
+            //  /usr/share/icons/oxygen/16x16/places/
+//            setIcon(myIcon, col2.file);
             myIcon.setImageResource(R.drawable.folder_blue);
         } else {
-            myIcon.setImageResource(R.drawable.document_multiple);
+            setIcon(myIcon, col2.file);
+
         }
 
         return result;

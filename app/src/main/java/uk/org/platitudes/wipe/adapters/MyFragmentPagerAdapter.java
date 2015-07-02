@@ -64,8 +64,8 @@ public class MyFragmentPagerAdapter extends android.support.v4.app.FragmentPager
     public CharSequence getPageTitle(int position) {
         Locale l = Locale.getDefault();
         switch (position) {
-            case 0: return mActivity.getString(R.string.title_section1);
-            case 1: return mActivity.getString(R.string.title_section2);
+            case 0: return "Select files";
+            case 1: return "Delete files";
         }
         return null;
     }

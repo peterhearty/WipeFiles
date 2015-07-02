@@ -136,7 +136,7 @@ public class RealFileWiper {
             raf.seek(0);
 
             while (!counter.isFinished()) {
-                deleteFilesBackgroundTask.currentFileName = prefixString+" "+counter.getCurrentValue()+"/"+counter.getMaxValue();
+                deleteFilesBackgroundTask.mCurrentFileName = prefixString+" "+counter.getCurrentValue()+"/"+counter.getMaxValue();
                 long writeSize = writeBlockSize;
                 long bytesLeft = counter.getMaxValue() - counter.getCurrentValue();
                 if (bytesLeft < writeBlockSize)
@@ -179,13 +179,13 @@ public class RealFileWiper {
     }
 
     public void wipeFile(File f) {
-        deleteFilesBackgroundTask.currentFileName = f.getName();
+        deleteFilesBackgroundTask.mCurrentFileName = f.getName();
 
-        deleteFilesBackgroundTask.addLogMessage("Wiping " + deleteFilesBackgroundTask.currentFileName + " size " + f.length());
+        deleteFilesBackgroundTask.addLogMessage("Wiping " + deleteFilesBackgroundTask.mCurrentFileName + " size " + f.length());
 
         for (int i = 0; i < numberPasses; i++) {
             ProgressCounter singlePassCounter = new ProgressCounter(f.length());
-            singlePassCounter.setParentCounter(deleteFilesBackgroundTask.progressCounter);
+            singlePassCounter.setParentCounter(deleteFilesBackgroundTask.mProgressCounter);
 
             if (performZeroWipe) {
                 // Wipe with zeros first

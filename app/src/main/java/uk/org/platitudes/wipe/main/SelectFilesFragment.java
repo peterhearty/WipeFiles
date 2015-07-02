@@ -135,6 +135,12 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         MainTabActivity.sTheMainActivity.mActionBar.setWindowTitle(title);
     }
 
+    public void resetListing () {
+        if (mCurDir==null)
+            mCurDir = Environment.getExternalStorageDirectory();
+        populateData(mCurDir); // Side effect = theData gets initialised
+    }
+
     private void populateData (File dirFile) {
         if (!dirFile.isDirectory()) return;
 

@@ -80,6 +80,11 @@ public class MainTabActivity extends ActionBarActivity {
         // It's non-null if the app is being restored
         // When non-null, the line below creates new PetesFragments. What else does it create?
         super.onCreate(savedInstanceState);
+
+        WarningDialog wd = new WarningDialog();
+        FragmentManager fm = getSupportFragmentManager();
+        wd.show(fm, "");
+
         setContentView(R.layout.activity_main);
         sTheMainActivity = this;
 
@@ -97,7 +102,6 @@ public class MainTabActivity extends ActionBarActivity {
 
         // Create the adapter that will return a fragment for each of the
         // primary sections of the activity.
-        FragmentManager fm = getSupportFragmentManager();
 
         // Creates (or restores) the 2 Fragments: the list of files and the files to be deleted.
         mSectionsPagerAdapter = new MyFragmentPagerAdapter(fm, this);
@@ -210,6 +214,12 @@ public class MainTabActivity extends ActionBarActivity {
     }
 
     @Override
+    protected void onDestroy() {
+        android.os.Process.killProcess(android.os.Process.myPid());
+        super.onDestroy();
+    }
+
+    @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Used to save dynamic data, e.g. when the screen is turned round.
@@ -227,6 +237,19 @@ public class MainTabActivity extends ActionBarActivity {
         // onSaveInstanceState (Bundle outState, PersistableBundle outPersistentState) is a separate call with an extra parameter.
         // It is invoked when an app is marked with the attribute persistableMode set to persistAcrossReboots. Such apps get
         // created via  onCreate(Bundle, PersistableBundle).
+    }
+
+    public void onWipeCompletion () {
+        // Relist the select files listing
+        mSectionsPagerAdapter.selectFilesFragment.resetListing();
+
+        // following line redraws the delete list (which should now be empty)
+        redrawBothLists(null);
+
+        // Show the log
+        Intent intent = new Intent(this, DeletionLogActivity.class);
+        startActivity(intent);
+
     }
 
 }

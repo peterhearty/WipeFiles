@@ -12,22 +12,19 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
 
-import uk.org.platitudes.wipe.main.DeleteFilesFragment;
-import uk.org.platitudes.wipe.main.MainTabActivity;
-
 /**
- * Invoked by DeleteFilesFragment when user clicks the "Wipe files" button.
+ * Forces users to accept responsibility for using this app.
  */
-public class LastChanceDialog extends DialogFragment implements DialogInterface.OnClickListener {
+public class WarningDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("Last chance, wiped files will be lost forever. Are you sure you want to proceed?");
-        builder.setPositiveButton("Yes", this);
-        builder.setNegativeButton("No", this);
+        builder.setMessage("WARNING - this app makes irreversible changes to your device. Under no circumstances will the authors be responsible for any loss of data. You use this app entirely at your own risk.");
+        builder.setPositiveButton("Accept", this);
+        builder.setNegativeButton("Decline", this);
         // Create the AlertDialog object and return it
         return builder.create();
     }
@@ -36,13 +33,11 @@ public class LastChanceDialog extends DialogFragment implements DialogInterface.
     public void onClick(DialogInterface dialog, int which) {
 
         if (which == DialogInterface.BUTTON_POSITIVE) {
-            DeleteFilesFragment dff = MainTabActivity.sTheMainActivity.mSectionsPagerAdapter.deleteFilesFragment;
-            dff.startFileDeletion();
+            // do nothing
         } else {
-            Context context = MainTabActivity.sTheMainActivity.getApplicationContext();
-            Toast toast = Toast.makeText(context, "Cancelled", Toast.LENGTH_SHORT);
-            toast.show();
+            MainTabActivity.sTheMainActivity.finish();
         }
+
 
     }
 }
