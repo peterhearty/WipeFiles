@@ -1,3 +1,6 @@
+/**
+ * This source code is not owned by anybody. You can can do what you like with it.
+ */
 package uk.org.platitudes.wipe.preferences;
 
 import android.preference.CheckBoxPreference;

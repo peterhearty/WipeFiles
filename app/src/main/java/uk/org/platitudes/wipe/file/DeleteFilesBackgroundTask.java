@@ -1,8 +1,5 @@
 /**
  * This source code is not owned by anybody. You can can do what you like with it.
- *
- * @author  Peter Hearty
- * @date    April 2015
  */
 package uk.org.platitudes.wipe.file;
 
@@ -234,6 +231,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
         MainTabActivity.sTheMainActivity.redrawBothLists(null);
 
         //TODO - HAVE TO RESET THE FILE SELECTION LIST TO THE TOP LEVEL DIRECTORY
+        //TODO - AUTOMATICALLY DISPLAY THE LOG
     }
 
     @Override

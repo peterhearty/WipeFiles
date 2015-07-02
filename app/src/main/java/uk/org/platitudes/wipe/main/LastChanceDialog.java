@@ -1,3 +1,6 @@
+/**
+ * This source code is not owned by anybody. You can can do what you like with it.
+ */
 package uk.org.platitudes.wipe.main;
 
 import android.app.Activity;
@@ -13,9 +16,7 @@ import uk.org.platitudes.wipe.main.DeleteFilesFragment;
 import uk.org.platitudes.wipe.main.MainTabActivity;
 
 /**
- * Invoked by DeleteFilesFragment when user clicks the "Delete" button.
- *
- * Created by pete on 17/05/15.
+ * Invoked by DeleteFilesFragment when user clicks the "Wipe files" button.
  */
 public class LastChanceDialog extends DialogFragment implements DialogInterface.OnClickListener {
 
