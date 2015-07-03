@@ -81,9 +81,7 @@ public class MainTabActivity extends ActionBarActivity {
         // When non-null, the line below creates new PetesFragments. What else does it create?
         super.onCreate(savedInstanceState);
 
-        WarningDialog wd = new WarningDialog();
         FragmentManager fm = getSupportFragmentManager();
-        wd.show(fm, "");
 
         setContentView(R.layout.activity_main);
         sTheMainActivity = this;
@@ -92,6 +90,9 @@ public class MainTabActivity extends ActionBarActivity {
             // data from previous incarnation
             mDeleteLog = savedInstanceState.getStringArrayList("mDeleteLog");
         } else {
+            WarningDialog wd = new WarningDialog();
+            wd.show(fm, "");
+
             mDeleteLog = new ArrayList<>();
         }
 
@@ -213,11 +214,12 @@ public class MainTabActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    protected void onDestroy() {
-        android.os.Process.killProcess(android.os.Process.myPid());
-        super.onDestroy();
-    }
+    // Don't do a process kill - it prevents a screen rotate.
+//    @Override
+//    protected void onDestroy() {
+//        android.os.Process.killProcess(android.os.Process.myPid());
+//        super.onDestroy();
+//    }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
