@@ -7,6 +7,8 @@ import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
@@ -92,25 +94,31 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
             return;
         }
 
-        String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(u);
 
         PackageManager pm = mContext.getPackageManager();
         List<ResolveInfo> matches = pm.queryIntentActivities(intent, 0);
         if (matches.size() == 0) {
+            String type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
             intent.setType(type);
             matches = pm.queryIntentActivities(intent, 0);
         }
 
         if (matches.size() > 0) {
             mimeIcon = matches.get(0).loadIcon(pm);
-            iconCache.put(extension, mimeIcon);
-            icon.setImageDrawable(mimeIcon);
-            return;
+            if (mimeIcon != null) {
+                iconCache.put(extension, mimeIcon);
+                icon.setImageDrawable(mimeIcon);
+                return;
+            }
         }
 
-        icon.setImageResource(R.drawable.document_multiple);
+        icon.setImageResource(R.drawable.ic_action_txt_icon);
+        mimeIcon = icon.getDrawable();
+        iconCache.put(extension, mimeIcon);
+
+//        List<ApplicationInfo> list = pm.getInstalledApplications(0);
 
     }
 
@@ -142,13 +150,18 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
         // If a file, or a reused row, then change it.
 
         ImageView myIcon = (ImageView) result.findViewById(R.id.myIcon1);
+        myIcon.setAdjustViewBounds(true);
+        myIcon.setMaxHeight(32);
+
         if (col2.file.isDirectory()) {
             //  /usr/share/icons/oxygen/16x16/places/
 //            setIcon(myIcon, col2.file);
-            myIcon.setImageResource(R.drawable.folder_blue);
+//            Drawable d = mContext.getPackageManager().getDefaultActivityIcon();
+//            myIcon.setImageDrawable(d);
+            myIcon.setImageResource(R.drawable.ic_folder);
         } else {
             setIcon(myIcon, col2.file);
-
+//            myIcon.setImageResource(R.drawable.ic_action_txt_icon);
         }
 
         return result;
