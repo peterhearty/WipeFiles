@@ -118,8 +118,6 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
         mimeIcon = icon.getDrawable();
         iconCache.put(extension, mimeIcon);
 
-//        List<ApplicationInfo> list = pm.getInstalledApplications(0);
-
     }
 
     @Override
@@ -151,7 +149,7 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
 
         ImageView myIcon = (ImageView) result.findViewById(R.id.myIcon1);
         myIcon.setAdjustViewBounds(true);
-        myIcon.setMaxHeight(32);
+        myIcon.setMaxHeight(48);
 
         if (col2.file.isDirectory()) {
             //  /usr/share/icons/oxygen/16x16/places/

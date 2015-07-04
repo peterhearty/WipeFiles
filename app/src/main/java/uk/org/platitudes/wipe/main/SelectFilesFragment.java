@@ -91,6 +91,12 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         mListView = (ListView) mRootView.findViewById(R.id.listOfFiles);
         populateData(mCurDir); // Side effect = theData gets initialised
 
+        if (theData.size()==0) {
+            // This happens if the external storage directory doesn't exit or cannot be read
+            mCurDir = Environment.getRootDirectory();
+            populateData(mCurDir); // Side effect = theData gets initialised
+        }
+
         // NOTE - BELOW IS WHERE ROW_LAYOUT GETS USED
         simpleAdapter = new ModifiedSimpleAdapter(
                 mRootView.getContext(),
@@ -139,6 +145,25 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         if (mCurDir==null)
             mCurDir = Environment.getExternalStorageDirectory();
         populateData(mCurDir); // Side effect = theData gets initialised
+    }
+
+    public boolean handleBackKey () {
+        boolean result = false;
+
+        File parentDir = mCurDir.getParentFile();
+        if (parentDir == null)
+            return result;
+
+        if (parentDir.canRead()) {
+            populateData(parentDir);
+            if (mCurDir ==parentDir) {
+                // populate worked
+                result = true;
+                mListView.invalidateViews();
+                simpleAdapter.notifyDataSetChanged();
+            }
+        }
+        return result;
     }
 
     private void populateData (File dirFile) {
