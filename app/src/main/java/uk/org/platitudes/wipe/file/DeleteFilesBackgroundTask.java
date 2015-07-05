@@ -170,6 +170,10 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
             }
         }
         addLogMessage("Leaving directory " + f.getName());
+
+        // Now wipe the empty directory
+        if (!isCancelled())
+            mFileWiper.wipeFile(f);
     }
 
     public void addLogMessage (String s) {
@@ -214,6 +218,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
      */
     protected void onCancelled (Void result) {
         mProgressDialog.hide();
+        MainTabActivity.sTheMainActivity.onWipeCompletion();
     }
 
     /**

@@ -33,7 +33,6 @@ public class RealFileWiper {
 
     private int numberPasses;
     private boolean performZeroWipe;
-    private boolean performRandomWipe;
     private boolean testMode;
     private int writeBlockSize;
     private byte[] zeroBlock;
@@ -60,7 +59,7 @@ public class RealFileWiper {
         testMode = test;
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(MainTabActivity.sTheMainActivity);
         numberPasses = getIntPreference("number_passes", 1, 32, 1);
-        performZeroWipe = sharedPref.getBoolean("zero_wipe", true);
+        performZeroWipe = sharedPref.getBoolean("zero_wipe", false);
         writeBlockSize = getIntPreference("block_size", 512, 65536, 8192);
 
         String testModeSleepTimeString = sharedPref.getString("test_mode_sleep_time_key", "10");
@@ -68,6 +67,10 @@ public class RealFileWiper {
 
         zeroBlock = new byte[writeBlockSize];
         randomBlock = new byte[writeBlockSize];
+    }
+
+    private void log (String s) {
+        deleteFilesBackgroundTask.addLogMessage(s);
     }
 
     private void renamefile (File f) {
@@ -90,15 +93,15 @@ public class RealFileWiper {
             String message = "Renaming "+currentName+" to "+newFileName;
             deleteFilesBackgroundTask.addLogMessage(message);
             if (testMode) {
-                deleteFilesBackgroundTask.addLogMessage("TEST - skipping rename");
+                log("TEST - skipping rename");
                 return;
             } else {
                 boolean renameWorked  = f.renameTo(newFile);
                 if (renameWorked) {
-                    deleteFilesBackgroundTask.addLogMessage("Rename succeeded - attempting delete");
+                    log("Rename succeeded - attempting delete");
                     boolean deleteWorked = newFile.delete();
                     if (deleteWorked) {
-                        deleteFilesBackgroundTask.addLogMessage("Delete succeeded");
+                        log("Delete succeeded");
                     }
                     break;
                 }
@@ -111,7 +114,7 @@ public class RealFileWiper {
         try {
             raf.close();
         } catch (IOException ioe) {
-            deleteFilesBackgroundTask.addLogMessage("Closing random access file " + ioe);
+            log("Closing random access file " + ioe);
         }
     }
 
@@ -135,6 +138,7 @@ public class RealFileWiper {
             raf = new RandomAccessFile(f, sReadWriteMode);
             raf.seek(0);
 
+            log (prefixString+"starting");
             while (!counter.isFinished()) {
                 deleteFilesBackgroundTask.mCurrentFileName = prefixString+" "+counter.getCurrentValue()+"/"+counter.getMaxValue();
                 long writeSize = writeBlockSize;
@@ -153,7 +157,7 @@ public class RealFileWiper {
                     try {
                         Thread.sleep(testModeSleepTime);
                     } catch (Exception e) {
-                        deleteFilesBackgroundTask.addLogMessage("TEST sleep "+e);
+                        log("TEST sleep " + e);
                     }
                 } else {
                     // perform a real wipe
@@ -163,17 +167,17 @@ public class RealFileWiper {
                 deleteFilesBackgroundTask.progress(counter.getProgressPercent());
 
                 if (deleteFilesBackgroundTask.isCancelled()) {
-                    deleteFilesBackgroundTask.addLogMessage ("Delete cancelled");
+                    log("Delete cancelled");
                     break;
                 }
             }
         } catch (IOException ioe) {
-            deleteFilesBackgroundTask.addLogMessage(prefixString + ioe);
+            log(prefixString + ioe);
         } finally {
             closeRandomAccessFile(raf);
         }
 
-        deleteFilesBackgroundTask.addLogMessage(prefixString + "complete");
+        log(prefixString + "complete");
 
         counter.finish();
     }
@@ -181,32 +185,32 @@ public class RealFileWiper {
     public void wipeFile(File f) {
         deleteFilesBackgroundTask.mCurrentFileName = f.getName();
 
-        deleteFilesBackgroundTask.addLogMessage("Wiping " + deleteFilesBackgroundTask.mCurrentFileName + " size " + f.length());
+        log ("Wiping " + deleteFilesBackgroundTask.mCurrentFileName + " size " + f.length());
 
-        for (int i = 0; i < numberPasses; i++) {
-            ProgressCounter singlePassCounter = new ProgressCounter(f.length());
-            singlePassCounter.setParentCounter(deleteFilesBackgroundTask.mProgressCounter);
+        if (!f.isDirectory()) {
+            // Don't wipe directory files, just do rename and delete (below).
+            for (int i = 0; i < numberPasses; i++) {
+                ProgressCounter singlePassCounter = new ProgressCounter(f.length());
+                singlePassCounter.setParentCounter(deleteFilesBackgroundTask.mProgressCounter);
 
-            if (performZeroWipe) {
-                // Wipe with zeros first
-                ProgressCounter zeroCounter = singlePassCounter.copy();
-                String progressPrefixString = "PASS " + (i + 1) + " ZEROES " + f.getName() + " ";
-                wipePass(progressPrefixString, f, zeroCounter, false);
+                if (performZeroWipe) {
+                    // Wipe with zeros first
+                    ProgressCounter zeroCounter = singlePassCounter.copy();
+                    String progressPrefixString = "PASS " + (i + 1) + " ZEROES " + f.getName() + " ";
+                    wipePass(progressPrefixString, f, zeroCounter, false);
+                    if (deleteFilesBackgroundTask.isCancelled())
+                        return;
+                }
+                String progressPrefixString = "PASS " + (i + 1) + " RANDOMS " + f.getName() + " ";
+                wipePass(progressPrefixString, f, singlePassCounter, true);
+                if (deleteFilesBackgroundTask.isCancelled())
+                    return;
             }
-            String progressPrefixString = "PASS " + (i + 1) + " RANDOMS " + f.getName() + " ";
-            wipePass(progressPrefixString, f, singlePassCounter, true);
         }
 
         renamefile(f);
 
-        try {
-        } catch (Exception e) {
-            deleteFilesBackgroundTask.addLogMessage("Exception: " + e.toString());
-            return;
-        }
-
-
-        deleteFilesBackgroundTask.addLogMessage("Wipe complete: " + f.getName());
+        log("Wipe complete: " + f.getName());
     }
 
     public void updateByteCountWithPassCount(ProgressCounter counter) {
