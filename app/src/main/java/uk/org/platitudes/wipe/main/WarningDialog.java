@@ -22,7 +22,7 @@ public class WarningDialog extends DialogFragment implements DialogInterface.OnC
 
         // Use the Builder class for convenient dialog construction
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("WARNING - this app makes irreversible changes to your device. Under no circumstances will the authors be responsible for any loss of data. You use this app entirely at your own risk.");
+        builder.setMessage("WARNING - this app makes irreversible changes to your device. Under no circumstances will the authors be responsible for any loss or damage. You use this app entirely at your own risk.");
         builder.setPositiveButton("Accept", this);
         builder.setNegativeButton("Decline", this);
         // Create the AlertDialog object and return it
