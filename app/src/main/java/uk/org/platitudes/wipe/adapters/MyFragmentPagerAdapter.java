@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Locale;
 
 import uk.org.platitudes.wipe.main.DeleteFilesFragment;
-import uk.org.platitudes.petespagerexamples.R;
 import uk.org.platitudes.wipe.main.SelectFilesFragment;
 
 /**

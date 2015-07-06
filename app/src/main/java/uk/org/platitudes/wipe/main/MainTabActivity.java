@@ -18,7 +18,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 
-import uk.org.platitudes.petespagerexamples.R;
+import uk.org.platitudes.wipefiles.R;
 import uk.org.platitudes.wipe.adapters.MyFragmentPagerAdapter;
 import uk.org.platitudes.wipe.preferences.SettingsActivity;
 

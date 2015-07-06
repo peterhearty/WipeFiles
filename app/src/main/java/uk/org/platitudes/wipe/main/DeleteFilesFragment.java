@@ -23,7 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uk.org.platitudes.petespagerexamples.R;
+import uk.org.platitudes.wipefiles.R;
 import uk.org.platitudes.wipe.file.DeleteFilesBackgroundTask;
 import uk.org.platitudes.wipe.adapters.ModifiedSimpleAdapter;
 import uk.org.platitudes.wipe.file.FileHolder;

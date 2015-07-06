@@ -9,9 +9,8 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import uk.org.platitudes.petespagerexamples.R;
+import uk.org.platitudes.wipefiles.R;
 import uk.org.platitudes.wipe.adapters.DeleteLogAdapter;
-import uk.org.platitudes.wipe.main.MainTabActivity;
 
 /**
  * Displays the log of files deleted in the last deltion run.

@@ -7,8 +7,7 @@ import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.widget.ImageButton;
 
-import uk.org.platitudes.petespagerexamples.R;
-import uk.org.platitudes.wipe.main.MainTabActivity;
+import uk.org.platitudes.wipefiles.R;
 
 /**
  * The DeleteFilesFragment and the SelectFilesFragment both have a small arrow button

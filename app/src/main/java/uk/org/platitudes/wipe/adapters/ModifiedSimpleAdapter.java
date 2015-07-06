@@ -4,16 +4,12 @@
 package uk.org.platitudes.wipe.adapters;
 
 import android.app.Activity;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +20,6 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import java.io.File;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +27,7 @@ import java.util.Map;
 
 import uk.org.platitudes.wipe.file.FileHolder;
 import uk.org.platitudes.wipe.main.MainTabActivity;
-import uk.org.platitudes.petespagerexamples.R;
+import uk.org.platitudes.wipefiles.R;
 
 /**
  * Modifies the SimpleAdapter used to display a row of data in a ListView.
