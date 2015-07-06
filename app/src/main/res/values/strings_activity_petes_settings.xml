@@ -7,7 +7,7 @@
         <item>Small</item>
         <item>Medium</item>
         <item>Large</item>
-        <item>Extra rarge</item>
+        <item>Extra large</item>
     </string-array>
     <string-array name="text_size_list_values">
         <item>15</item>
