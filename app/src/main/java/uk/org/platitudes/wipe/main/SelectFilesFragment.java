@@ -4,7 +4,9 @@
 package uk.org.platitudes.wipe.main;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
@@ -13,11 +15,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.apache.http.protocol.HTTP;
 
 import java.io.File;
 import java.io.IOException;
@@ -92,7 +97,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         populateData(mCurDir); // Side effect = theData gets initialised
 
         if (theData.size()==0) {
-            // This happens if the external storage directory doesn't exit or cannot be read
+            // This happens if the external storage directory doesn't exist or cannot be read
             mCurDir = Environment.getRootDirectory();
             populateData(mCurDir); // Side effect = theData gets initialised
         }
@@ -185,7 +190,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         File pf = dirFile.getParentFile();
         if (pf != null) {
             FileHolder header = new FileHolder(pf);
-            header.nameOverride = "..";
+            header.nameOverride = "<Up one directory>";
             addRowForFile(header);
         }
 
@@ -224,13 +229,36 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         super.onResume();
     }
 
+    public static void tryToShowFile (Fragment frag, File file) {
+        if (file==null) return;
+        if (file.isDirectory()) return;
+
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_VIEW);
+        Uri uri = Uri.fromFile(file);
+        String uriString = uri.toString();
+        String extension = MimeTypeMap.getFileExtensionFromUrl(uriString);
+        extension = extension.toLowerCase();
+        String mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension);
+        sendIntent.setDataAndType(uri, mimeType);
+
+        // Verify that the intent will resolve to an activity
+        if (sendIntent.resolveActivity(MainTabActivity.sTheMainActivity.getPackageManager()) != null) {
+            frag.startActivity(sendIntent);
+        }
+    }
+
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         FileHolder fh = (FileHolder) theData.get(position).get(ModifiedSimpleAdapter.from[1]);
         File f = fh.file;
-        populateData(f);
-        mListView.invalidateViews();
-        simpleAdapter.notifyDataSetChanged();
+        if (f.isDirectory()) {
+            populateData(f);
+            mListView.invalidateViews();
+            simpleAdapter.notifyDataSetChanged();
+        } else {
+            tryToShowFile (this, f);
+        }
     }
 
     private void displayMessage (String s) {
@@ -259,6 +287,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         boolean added = delFrag.addRowForFile(f);
 
         if (!added) {
+            // TODO - add a dialog to ask if they want to remove the file
             displayMessage (f.getName() + " already there");
         } else {
             displayMessage (f.getName() + " added to delete list");

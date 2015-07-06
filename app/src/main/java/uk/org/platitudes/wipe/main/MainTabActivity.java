@@ -188,6 +188,15 @@ public class MainTabActivity extends ActionBarActivity {
 
     @Override
     public void onBackPressed() {
+        int currentPageshowing = mViewPager.getCurrentItem();
+
+        if (currentPageshowing == 1) {
+            // Delete fragment showing - back key means "go to select list"
+            mViewPager.setCurrentItem(0);
+            return;
+        }
+
+        // Must be on select page - back means go up a directory.
         boolean handled = mSectionsPagerAdapter.selectFilesFragment.handleBackKey();
         if (handled)
             return;

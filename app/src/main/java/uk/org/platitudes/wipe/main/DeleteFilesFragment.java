@@ -4,6 +4,8 @@
 package uk.org.platitudes.wipe.main;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -35,7 +38,7 @@ import uk.org.platitudes.wipe.file.FileHolder;
  *
  * Layout:   file_list_with_title_and_button.xml
  */
-public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemLongClickListener, View.OnClickListener, ControlButtonHandler.GetControlButtonHandler {
+public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemClickListener, AdapterView.OnItemLongClickListener, View.OnClickListener, ControlButtonHandler.GetControlButtonHandler {
 
     /**
      * The ListView is defined in file_list_with_title.xml.
@@ -113,6 +116,7 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
                 ModifiedSimpleAdapter.to);
         mListView.setAdapter(mSimpleAdapter);
         mListView.setSelected(false);
+        mListView.setOnItemClickListener(this);
         mListView.setOnItemLongClickListener(this);
 
         TextView tv = (TextView) rootView.findViewById(R.id.section_label);
@@ -181,6 +185,8 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
         return true;
     }
 
+    //TODO - onItemClick show file is possible
+
     private void showToast (String msg) {
         Context context = MainTabActivity.sTheMainActivity.getApplicationContext();
         Toast toast = Toast.makeText(context, msg, Toast.LENGTH_SHORT);
@@ -224,5 +230,13 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemL
     @Override
     public ControlButtonHandler getControlButtonHandler() {
         return mControlButtonHandler;
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        FileHolder fh = (FileHolder) theData.get(position).get(ModifiedSimpleAdapter.from[1]);
+        File f = fh.file;
+        SelectFilesFragment.tryToShowFile (this, f);
+
     }
 }

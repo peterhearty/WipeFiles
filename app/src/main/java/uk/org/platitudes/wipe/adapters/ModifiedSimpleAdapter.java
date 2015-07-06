@@ -82,6 +82,8 @@ public class ModifiedSimpleAdapter extends SimpleAdapter {
         Uri u = Uri.fromFile(f);
         String uriString = u.toString();
         String extension = MimeTypeMap.getFileExtensionFromUrl(uriString);
+        extension = extension.toLowerCase();
+
 
         Drawable mimeIcon = iconCache.get(extension);
         if (mimeIcon != null) {

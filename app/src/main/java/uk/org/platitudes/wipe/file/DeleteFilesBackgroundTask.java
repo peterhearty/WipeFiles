@@ -200,7 +200,6 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
             wipeFile (f);
             if (!mTestMode) {
                 theData.remove(hashMap);
-                // TODO - have to remove file from list, except when doing a test run.
             }
             if (isCancelled()) {
                 Log.i("bgrnd", "file delete cancelled");

@@ -64,7 +64,7 @@ public class MyFragmentPagerAdapter extends android.support.v4.app.FragmentPager
         Locale l = Locale.getDefault();
         switch (position) {
             case 0: return "Select files";
-            case 1: return "Delete files";
+            case 1: return "Delete list";
         }
         return null;
     }
