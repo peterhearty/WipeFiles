@@ -192,7 +192,12 @@ public class MainTabActivity extends ActionBarActivity {
         if (handled)
             return;
 
-        super.onBackPressed();
+        // Use back key as exit button
+        ConfirmExitFromBackKey confirmDialog = new ConfirmExitFromBackKey();
+        FragmentManager fm = getSupportFragmentManager();
+        confirmDialog.show(fm, "Confirm exit");
+
+//        super.onBackPressed();
     }
 
     @Override
