@@ -173,7 +173,12 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
 
         // Now wipe the empty directory
         if (!isCancelled())
-            mFileWiper.wipeFile(f);
+            if (f.listFiles().length > 0) {
+                // Test for non-empty dir. This could be slow because it relies on listFiles.
+                addLogMessage ("Skipping dir delete - not empty.");
+            } else {
+                mFileWiper.wipeFile(f);
+            }
     }
 
     public void addLogMessage (String s) {
@@ -216,7 +221,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
      * write your own implementation, do not call super.onCancelled(result).
      */
     protected void onCancelled (Void result) {
-        mProgressDialog.hide();
+        mProgressDialog.dismiss();
         MainTabActivity.sTheMainActivity.onWipeCompletion();
     }
 
@@ -237,7 +242,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
      * value of doInBackground.
      */
     protected void onPostExecute(Void result) {
-        mProgressDialog.hide();
+        mProgressDialog.dismiss();
         MainTabActivity.sTheMainActivity.onWipeCompletion();
     }
 
