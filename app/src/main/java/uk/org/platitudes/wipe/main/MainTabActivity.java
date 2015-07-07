@@ -3,6 +3,7 @@
  */
 package uk.org.platitudes.wipe.main;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.PersistableBundle;
@@ -18,6 +19,7 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import uk.org.platitudes.wipe.dialog.AboutDialog;
 import uk.org.platitudes.wipe.dialog.ConfirmExitFromBackKey;
 import uk.org.platitudes.wipe.dialog.WarningDialog;
 import uk.org.platitudes.wipefiles.R;
@@ -234,6 +236,11 @@ public class MainTabActivity extends ActionBarActivity {
             Intent intent = new Intent(this, DeletionLogActivity.class);
             startActivity(intent);
             return true;
+        }
+
+        if (id == R.id.about_dialog) {
+            AboutDialog about = new AboutDialog();
+            about.show(getSupportFragmentManager(),"");
         }
 
         return super.onOptionsItemSelected(item);

@@ -122,6 +122,7 @@ public class RealFileWiper {
         if (testMode) {
             prefixString = "TEST "+prefixString;
         }
+        prefixString = "- "+prefixString;
 
         // The random numbers don't have to be cryptographically strong.
         // Plain old vanilla Random is good enough.
