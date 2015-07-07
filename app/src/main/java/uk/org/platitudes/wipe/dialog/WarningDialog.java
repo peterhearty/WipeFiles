@@ -1,7 +1,7 @@
 /**
  * This source code is not owned by anybody. You can can do what you like with it.
  */
-package uk.org.platitudes.wipe.main;
+package uk.org.platitudes.wipe.dialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.widget.Toast;
+
+import uk.org.platitudes.wipe.main.MainTabActivity;
 
 /**
  * Forces users to accept responsibility for using this app.

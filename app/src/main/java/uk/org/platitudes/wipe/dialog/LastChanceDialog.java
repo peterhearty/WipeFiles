@@ -1,7 +1,7 @@
 /**
  * This source code is not owned by anybody. You can can do what you like with it.
  */
-package uk.org.platitudes.wipe.main;
+package uk.org.platitudes.wipe.dialog;
 
 import android.app.Activity;
 import android.app.AlertDialog;

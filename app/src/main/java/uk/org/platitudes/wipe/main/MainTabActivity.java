@@ -18,6 +18,8 @@ import android.view.View;
 
 import java.util.ArrayList;
 
+import uk.org.platitudes.wipe.dialog.ConfirmExitFromBackKey;
+import uk.org.platitudes.wipe.dialog.WarningDialog;
 import uk.org.platitudes.wipefiles.R;
 import uk.org.platitudes.wipe.adapters.MyFragmentPagerAdapter;
 import uk.org.platitudes.wipe.preferences.SettingsActivity;
