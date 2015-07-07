@@ -63,7 +63,7 @@ public class RealFileWiper {
         writeBlockSize = getIntPreference("block_size", 512, 65536, 8192);
 
         String testModeSleepTimeString = sharedPref.getString("test_mode_sleep_time_key", "10");
-        testModeSleepTime = getIntPreference("test_mode_sleep_time_key", 1, 65536, 10);
+        testModeSleepTime = getIntPreference("test_mode_sleep_time_key", 1, 65536, 1);
 
         zeroBlock = new byte[writeBlockSize];
         randomBlock = new byte[writeBlockSize];
