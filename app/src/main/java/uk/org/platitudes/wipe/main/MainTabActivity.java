@@ -13,13 +13,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import uk.org.platitudes.wipe.dialog.AboutDialog;
 import uk.org.platitudes.wipe.dialog.ConfirmExitFromBackKey;
 import uk.org.platitudes.wipe.dialog.WarningDialog;
 import uk.org.platitudes.wipefiles.R;
@@ -239,8 +241,18 @@ public class MainTabActivity extends ActionBarActivity {
         }
 
         if (id == R.id.about_dialog) {
-            AboutDialog about = new AboutDialog();
-            about.show(getSupportFragmentManager(),"");
+            // From http://stackoverflow.com/questions/1997328/how-can-i-get-clickable-hyperlinks-in-alertdialog-from-a-string-resource
+            final AlertDialog d = new AlertDialog.Builder(this)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .setMessage(Html.fromHtml("Wipe Files V0.1<P>" +
+                            "<P>" +
+                            "This is free software.<BR>" +
+                            "The source is available at<BR>" +
+                            "<a href=\"https://github.com/peterhearty/WipeFiles\">https://github.com/peterhearty/WipeFiles</a>"))
+                    .create();
+            d.show();
+            // Make the textview clickable. Must be called after show()
+            ((TextView)d.findViewById(android.R.id.message)).setMovementMethod(LinkMovementMethod.getInstance());
         }
 
         return super.onOptionsItemSelected(item);
