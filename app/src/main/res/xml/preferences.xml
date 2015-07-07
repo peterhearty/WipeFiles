@@ -14,7 +14,7 @@
         <EditTextPreference
             android:key="test_mode_sleep_time_key"
             android:title="Test mode sleep time"
-            android:defaultValue="10"
+            android:defaultValue="1"
             android:selectAllOnFocus="true"
             android:inputType="numberDecimal"
             android:capitalize="none"
