@@ -5,7 +5,6 @@ package uk.org.platitudes.wipe.file;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class RealFileWiper {
             if (result < min || result > max)
                 result = defaultValue;
         } catch (Exception e) {
-            Log.e("Wipe", "Getting preference", e);
+            deleteFilesBackgroundTask.addLogMessage("Error getting preference " + e);
         }
         return result;
     }

@@ -6,16 +6,15 @@ package uk.org.platitudes.wipe.main;
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.FragmentManager;
-import android.os.Bundle;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,11 +22,11 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import uk.org.platitudes.wipe.adapters.MyFragmentPagerAdapter;
 import uk.org.platitudes.wipe.dialog.ConfirmExitFromBackKey;
 import uk.org.platitudes.wipe.dialog.WarningDialog;
-import uk.org.platitudes.wipefiles.R;
-import uk.org.platitudes.wipe.adapters.MyFragmentPagerAdapter;
 import uk.org.platitudes.wipe.preferences.SettingsActivity;
+import uk.org.platitudes.wipefiles.R;
 
 
 /**
@@ -153,7 +152,7 @@ public class MainTabActivity extends ActionBarActivity {
             setTextSize();
             hideOrShowTabs();
         } catch (Throwable t) {
-            Log.e("onCreate", "onCreate", t);
+            mDeleteLog.add("Error onCreate "+t);
         }
     }
 

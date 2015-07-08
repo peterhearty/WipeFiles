@@ -3,14 +3,11 @@
  */
 package uk.org.platitudes.wipe.dialog;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.widget.Toast;
 
 import uk.org.platitudes.wipe.main.MainTabActivity;
 

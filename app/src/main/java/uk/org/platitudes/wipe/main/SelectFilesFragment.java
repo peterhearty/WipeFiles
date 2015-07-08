@@ -11,7 +11,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,16 +21,14 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.protocol.HTTP;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uk.org.platitudes.wipefiles.R;
 import uk.org.platitudes.wipe.adapters.ModifiedSimpleAdapter;
 import uk.org.platitudes.wipe.file.FileHolder;
+import uk.org.platitudes.wipefiles.R;
 
 /**
  * Allows a user to select files to add to the deletetion list.
@@ -215,7 +212,7 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
         try {
             outState.putString("directory", mCurDir.getCanonicalPath());
         } catch (IOException ioe) {
-            Log.e("app", "saving instance dir", ioe);
+            MainTabActivity.sTheMainActivity.mDeleteLog.add("Error saving instance dir " + ioe);
         }
     }
 

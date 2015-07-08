@@ -7,7 +7,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +22,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import uk.org.platitudes.wipe.dialog.LastChanceDialog;
-import uk.org.platitudes.wipefiles.R;
-import uk.org.platitudes.wipe.file.DeleteFilesBackgroundTask;
 import uk.org.platitudes.wipe.adapters.ModifiedSimpleAdapter;
+import uk.org.platitudes.wipe.dialog.LastChanceDialog;
+import uk.org.platitudes.wipe.file.DeleteFilesBackgroundTask;
 import uk.org.platitudes.wipe.file.FileHolder;
+import uk.org.platitudes.wipefiles.R;
 
 /**
  * Provides one of the two main tab views, the other being SelectFilesFragment.
@@ -140,7 +139,7 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemC
                 if (newPath.equals(existingPath))
                     return false;
             } catch (Exception e) {
-                Log.e("app", "adding file to delete", e);
+                MainTabActivity.sTheMainActivity.mDeleteLog.add("Error adding file to delete list " + e);
             }
         }
 
@@ -171,7 +170,7 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemC
             }
             outState.putStringArrayList("filesToDelete", filesToDelete);
         } catch (IOException ioe) {
-            Log.e("app", "saving instance dir", ioe);
+            MainTabActivity.sTheMainActivity.mDeleteLog.add("Error saving instance dir"+ioe);
         }
     }
 

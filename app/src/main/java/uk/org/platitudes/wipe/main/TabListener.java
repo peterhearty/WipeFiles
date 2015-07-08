@@ -10,9 +10,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.view.View;
 
-import uk.org.platitudes.wipe.main.DeleteFilesFragment;
-import uk.org.platitudes.wipe.main.SelectFilesFragment;
-
 /**
  * Switches views when a tab is selected.
  */

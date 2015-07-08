@@ -5,18 +5,15 @@ package uk.org.platitudes.wipe.file;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
-import android.util.Log;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import uk.org.platitudes.wipe.adapters.ModifiedSimpleAdapter;
-import uk.org.platitudes.wipe.main.DeletionLogActivity;
 import uk.org.platitudes.wipe.main.MainTabActivity;
 
 /**
@@ -207,7 +204,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
                 theData.remove(hashMap);
             }
             if (isCancelled()) {
-                Log.i("bgrnd", "file delete cancelled");
+                addLogMessage("File delete cancelled");
                 break;
             }
         }
