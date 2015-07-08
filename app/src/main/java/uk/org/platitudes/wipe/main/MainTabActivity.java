@@ -15,6 +15,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -218,6 +219,15 @@ public class MainTabActivity extends ActionBarActivity {
 
 //        super.onBackPressed();
     }
+
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        switch(keyCode) {
+//            case KeyEvent.KEYCODE_MENU:
+//                return true;
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
