@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -82,74 +83,78 @@ public class MainTabActivity extends ActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // savedInstanceState is null when app first created.
-        // It's non-null if the app is being restored
-        // When non-null, the line below creates new PetesFragments. What else does it create?
-        super.onCreate(savedInstanceState);
+        try {
+            // savedInstanceState is null when app first created.
+            // It's non-null if the app is being restored
+            // When non-null, the line below creates new PetesFragments. What else does it create?
+            super.onCreate(savedInstanceState);
 
-        FragmentManager fm = getSupportFragmentManager();
+            FragmentManager fm = getSupportFragmentManager();
 
-        setContentView(R.layout.activity_main);
-        sTheMainActivity = this;
+            setContentView(R.layout.activity_main);
+            sTheMainActivity = this;
 
-        if (savedInstanceState != null) {
-            // data from previous incarnation
-            mDeleteLog = savedInstanceState.getStringArrayList("mDeleteLog");
-        } else {
-            WarningDialog wd = new WarningDialog();
-            wd.show(fm, "");
+            if (savedInstanceState != null) {
+                // data from previous incarnation
+                mDeleteLog = savedInstanceState.getStringArrayList("mDeleteLog");
+            } else {
+                WarningDialog wd = new WarningDialog();
+                wd.show(fm, "");
 
-            mDeleteLog = new ArrayList<>();
-        }
-
-        // Set up the action bar. ActionBar has the app title, menus etc.
-        mActionBar = getSupportActionBar();
-        mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-
-        // Create the adapter that will return a fragment for each of the
-        // primary sections of the activity.
-
-        // Creates (or restores) the 2 Fragments: the list of files and the files to be deleted.
-        mSectionsPagerAdapter = new MyFragmentPagerAdapter(fm, this);
-
-        // Set up the ViewPager with the sections adapter.
-        // http://developer.android.com/reference/android/support/v4/view/ViewPager.html
-        // Layout manager that allows the user to flip left and right through pages of data.
-        // You supply an implementation of a PagerAdapter to generate the pages that the view shows.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-        View content = findViewById(android.R.id.content);
-
-        // When swiping between different sections, select the corresponding
-        // tab. We can also use ActionBar.Tab#select() to do this if we have
-        // a reference to the Tab.
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                mActionBar.setSelectedNavigationItem(position);
+                mDeleteLog = new ArrayList<>();
             }
-        });
 
-        mTabListener = new TabListener(mViewPager, mSectionsPagerAdapter);
+            // Set up the action bar. ActionBar has the app title, menus etc.
+            mActionBar = getSupportActionBar();
+            mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-        // For each of the sections in the app, add a tab to the action bar.x
-        for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
-            // Create a tab with text corresponding to the page title defined by
-            // the adapter. Also specify this Activity object, which implements
-            // the TabListener interface, as the callback (listener) for when
-            // this tab is selected.
-            CharSequence pageTitle = mSectionsPagerAdapter.getPageTitle(i);
-            ActionBar.Tab newTab = mActionBar.newTab();
-            newTab.setText(pageTitle);
-            newTab.setTabListener(mTabListener);
-            mActionBar.addTab(newTab);
+
+            // Create the adapter that will return a fragment for each of the
+            // primary sections of the activity.
+
+            // Creates (or restores) the 2 Fragments: the list of files and the files to be deleted.
+            mSectionsPagerAdapter = new MyFragmentPagerAdapter(fm, this);
+
+            // Set up the ViewPager with the sections adapter.
+            // http://developer.android.com/reference/android/support/v4/view/ViewPager.html
+            // Layout manager that allows the user to flip left and right through pages of data.
+            // You supply an implementation of a PagerAdapter to generate the pages that the view shows.
+            mViewPager = (ViewPager) findViewById(R.id.pager);
+            mViewPager.setAdapter(mSectionsPagerAdapter);
+
+            View content = findViewById(android.R.id.content);
+
+            // When swiping between different sections, select the corresponding
+            // tab. We can also use ActionBar.Tab#select() to do this if we have
+            // a reference to the Tab.
+            mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+                @Override
+                public void onPageSelected(int position) {
+                    mActionBar.setSelectedNavigationItem(position);
+                }
+            });
+
+            mTabListener = new TabListener(mViewPager, mSectionsPagerAdapter);
+
+            // For each of the sections in the app, add a tab to the action bar.x
+            for (int i = 0; i < mSectionsPagerAdapter.getCount(); i++) {
+                // Create a tab with text corresponding to the page title defined by
+                // the adapter. Also specify this Activity object, which implements
+                // the TabListener interface, as the callback (listener) for when
+                // this tab is selected.
+                CharSequence pageTitle = mSectionsPagerAdapter.getPageTitle(i);
+                ActionBar.Tab newTab = mActionBar.newTab();
+                newTab.setText(pageTitle);
+                newTab.setTabListener(mTabListener);
+                mActionBar.addTab(newTab);
+            }
+
+            // Get settings
+            setTextSize();
+            hideOrShowTabs();
+        } catch (Throwable t) {
+            Log.e("onCreate", "onCreate", t);
         }
-
-        // Get settings
-        setTextSize();
-        hideOrShowTabs();
     }
 
     private void setTextSize () {

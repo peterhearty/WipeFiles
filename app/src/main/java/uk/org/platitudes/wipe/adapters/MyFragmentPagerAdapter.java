@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import java.util.List;
 import java.util.Locale;
 
+import uk.org.platitudes.wipe.dialog.WarningDialog;
 import uk.org.platitudes.wipe.main.DeleteFilesFragment;
 import uk.org.platitudes.wipe.main.SelectFilesFragment;
 
@@ -22,20 +23,29 @@ public class MyFragmentPagerAdapter extends android.support.v4.app.FragmentPager
     public DeleteFilesFragment deleteFilesFragment;
     Activity mActivity;
 
+    private void createFragments () {
+        selectFilesFragment = new SelectFilesFragment();
+        deleteFilesFragment = new DeleteFilesFragment();
+    }
+
     public MyFragmentPagerAdapter(FragmentManager fm, Activity a) {
         super(fm);
         List<Fragment> fragmentList = fm.getFragments();
         if (fragmentList == null) {
             // This is the first time the app has been created. Create our own fragments.
-            selectFilesFragment = new SelectFilesFragment();
-            deleteFilesFragment = new DeleteFilesFragment();
+            createFragments();
         } else {
             // Fragments already recreated by android on restart
             for (Fragment f : fragmentList) {
                 if (f instanceof SelectFilesFragment) {
                     selectFilesFragment = (SelectFilesFragment) f;
-                } else {
+                } else if (f instanceof DeleteFilesFragment) {
                     deleteFilesFragment = (DeleteFilesFragment) f;
+                } else if (f instanceof WarningDialog) {
+                    // If the screen is rotated while the warning dialog is up then the
+                    // warning dialog appears as the only fragment. This is really the first
+                    // time the adapter has been created, so create the fragments from new.
+                    createFragments();
                 }
             }
         }
