@@ -140,8 +140,13 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
     }
 
     private void wipeFile (File f) {
-        if (isCancelled() || !f.exists())
+        if (isCancelled())
             return;
+
+        if (!f.exists()) {
+            addLogMessage(f.getName()+" no longer exists");
+            return;
+        }
 
         if (f.isFile()) {
             mFileWiper.wipeFile(f);
@@ -200,7 +205,7 @@ public class DeleteFilesBackgroundTask extends AsyncTask<ArrayList<HashMap<Strin
             FileHolder fh = (FileHolder) hashMap.get(ModifiedSimpleAdapter.from[1]);
             File f = fh.file;
             wipeFile (f);
-            if (!mTestMode) {
+            if (!mTestMode && !mFileWiper.errorOccurred) {
                 theData.remove(hashMap);
             }
             if (isCancelled()) {

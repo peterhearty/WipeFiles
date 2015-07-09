@@ -36,6 +36,7 @@ public class RealFileWiper {
     private int writeBlockSize;
     private byte[] zeroBlock;
     private byte[] randomBlock;
+    public boolean errorOccurred;
     private static final String sReadWriteMode = "rw"; // "rws" does synchronous writes, could make this an option.
 
     private int getIntPreference (String s, int min, int max, int defaultValue) {
@@ -64,6 +65,7 @@ public class RealFileWiper {
         String testModeSleepTimeString = sharedPref.getString("test_mode_sleep_time_key", "10");
         testModeSleepTime = getIntPreference("test_mode_sleep_time_key", 1, 65536, 1);
 
+        errorOccurred = false;
         zeroBlock = new byte[writeBlockSize];
         randomBlock = new byte[writeBlockSize];
     }
@@ -77,6 +79,7 @@ public class RealFileWiper {
         String directory = f.getParent();
         Random r = new Random();
 
+        boolean deleted = false;
         for (int j=0; j<3; j++) {
             // We try the rename several times in case the target name already exists.
 
@@ -101,10 +104,18 @@ public class RealFileWiper {
                     boolean deleteWorked = newFile.delete();
                     if (deleteWorked) {
                         log("Delete succeeded");
+                        deleted = true;
+                        break;
+                    } else {
+                        log("Delete failed");
                     }
-                    break;
+                } else {
+                    log ("Rename failed");
                 }
             }
+        }
+        if (!deleted) {
+            errorOccurred = true;
         }
     }
 
@@ -132,6 +143,18 @@ public class RealFileWiper {
         byte[] writeBlock = randomBlock;
         if (!randomPass)
             writeBlock = zeroBlock;
+
+        if (!f.canWrite()) {
+            log ("No write permission, wipe abandoned, "+prefixString);
+            errorOccurred = true;
+            return;
+        }
+
+        if (!f.canRead()) {
+            log ("No read permission, wipe abandoned, "+prefixString);
+            errorOccurred = true;
+            return;
+        }
 
         RandomAccessFile raf = null;
         try {
@@ -168,22 +191,27 @@ public class RealFileWiper {
 
                 if (deleteFilesBackgroundTask.isCancelled()) {
                     log("Delete cancelled");
+                    errorOccurred = true;
                     break;
                 }
             }
         } catch (IOException ioe) {
             log(prefixString + ioe);
+            errorOccurred = true;
         } finally {
             closeRandomAccessFile(raf);
         }
 
-        log(prefixString + "complete");
+        if (!errorOccurred)
+            log(prefixString + "complete");
 
         counter.finish();
     }
 
     public void wipeFile(File f) {
         deleteFilesBackgroundTask.mCurrentFileName = f.getName();
+
+        errorOccurred = false;
 
         log ("Wiping " + deleteFilesBackgroundTask.mCurrentFileName + " size " + f.length());
 
@@ -198,19 +226,21 @@ public class RealFileWiper {
                     ProgressCounter zeroCounter = singlePassCounter.copy();
                     String progressPrefixString = "PASS " + (i + 1) + " ZEROES " + f.getName() + " ";
                     wipePass(progressPrefixString, f, zeroCounter, false);
-                    if (deleteFilesBackgroundTask.isCancelled())
+                    if (deleteFilesBackgroundTask.isCancelled() || errorOccurred)
                         return;
                 }
                 String progressPrefixString = "PASS " + (i + 1) + " RANDOMS " + f.getName() + " ";
                 wipePass(progressPrefixString, f, singlePassCounter, true);
-                if (deleteFilesBackgroundTask.isCancelled())
+                if (deleteFilesBackgroundTask.isCancelled() || errorOccurred)
                     return;
             }
         }
 
-        renamefile(f);
+        if (!errorOccurred)
+            renamefile(f);
 
-        log("Wipe complete: " + f.getName());
+        if (!errorOccurred)
+            log("Wipe complete: " + f.getName());
     }
 
     public void updateByteCountWithPassCount(ProgressCounter counter) {

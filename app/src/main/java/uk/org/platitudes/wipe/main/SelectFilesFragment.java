@@ -223,6 +223,9 @@ public class SelectFilesFragment extends Fragment implements AdapterView.OnItemC
 
     @Override
     public void onResume() {
+        populateData(mCurDir);
+        mListView.invalidateViews();
+        simpleAdapter.notifyDataSetChanged();
         super.onResume();
     }
 
