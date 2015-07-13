@@ -20,6 +20,13 @@ https://developer.android.com/training/basics/actionbar/styling.html#CustomTabs
         <item name="actionBarTabStyle">@style/PetesTabView</item>
         <item name="actionBarTabBarStyle">@style/Petes_tabs</item>
         <item name="actionBarTabTextStyle">@style/AppTheme.ActionBar.TabText</item>
+        <item name="android:editTextStyle">@style/LightEditText</item>
+    </style>
+
+    <style name="LightEditText" parent="android:style/Widget.EditText">
+        <item name="android:background">@color/background_material_light</item>
+        <item name="android:textColor">@color/primary_dark_material_dark</item>
+        <item name="android:inputType">number</item>
     </style>
 
     <style name="PetesTabView" parent="android:style/Widget.Holo.ActionBar.TabView">

@@ -163,7 +163,7 @@ public class RealFileWiper {
 
             log (prefixString+"starting");
             while (!counter.isFinished()) {
-                deleteFilesBackgroundTask.mCurrentFileName = prefixString+" "+counter.getCurrentValue()+"/"+counter.getMaxValue();
+                deleteFilesBackgroundTask.mCurrentFileName = prefixString+" "+f.getName()+" "+counter.getCurrentValue()+"/"+counter.getMaxValue();
                 long writeSize = writeBlockSize;
                 long bytesLeft = counter.getMaxValue() - counter.getCurrentValue();
                 if (bytesLeft < writeBlockSize)
@@ -202,8 +202,8 @@ public class RealFileWiper {
             closeRandomAccessFile(raf);
         }
 
-        if (!errorOccurred)
-            log(prefixString + "complete");
+//        if (!errorOccurred)
+//            log(prefixString + "complete");
 
         counter.finish();
     }
@@ -224,12 +224,12 @@ public class RealFileWiper {
                 if (performZeroWipe) {
                     // Wipe with zeros first
                     ProgressCounter zeroCounter = singlePassCounter.copy();
-                    String progressPrefixString = "PASS " + (i + 1) + " ZEROES " + f.getName() + " ";
+                    String progressPrefixString = "PASS " + (i + 1) + " ZEROES ";
                     wipePass(progressPrefixString, f, zeroCounter, false);
                     if (deleteFilesBackgroundTask.isCancelled() || errorOccurred)
                         return;
                 }
-                String progressPrefixString = "PASS " + (i + 1) + " RANDOMS " + f.getName() + " ";
+                String progressPrefixString = "PASS " + (i + 1) + " RANDOMS ";
                 wipePass(progressPrefixString, f, singlePassCounter, true);
                 if (deleteFilesBackgroundTask.isCancelled() || errorOccurred)
                     return;
