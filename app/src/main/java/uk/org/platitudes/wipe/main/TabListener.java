@@ -23,8 +23,6 @@ public class TabListener implements ActionBar.TabListener  {
         mPager = fpa;
     }
 
-    private static int counter = 1;
-
     @Override
     public void onTabSelected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
         // When the given tab is selected, switch to the corresponding page in

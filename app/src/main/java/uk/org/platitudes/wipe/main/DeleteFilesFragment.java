@@ -182,8 +182,6 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemC
         return true;
     }
 
-    //TODO - onItemClick show file is possible
-
     private void showToast (String msg) {
         Context context = MainTabActivity.sTheMainActivity.getApplicationContext();
         Toast toast = Toast.makeText(context, msg, Toast.LENGTH_SHORT);
@@ -192,7 +190,6 @@ public class DeleteFilesFragment extends Fragment implements AdapterView.OnItemC
 
     /**
      * Handles clicks from the "test wipe" and "real wipe" buttons.
-     * @param v
      */
     @Override
     public void onClick(View v) {

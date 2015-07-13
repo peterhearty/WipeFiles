@@ -3,23 +3,38 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".PetesTabExample">
 
-    <item android:id="@+id/action_show_log"
-        android:title="Log"
-        android:orderInCategory="100"
-        app:showAsAction="collapseActionView" />
+    <!-- On Android 3 and later we don't need this top level "overflow" menu.
+        We can add the "item"s directly. On 2.3 and below the menu is hidden
+        until the "menu" key gets pressed. This works on the ZTE blade for example
+        but not on all tablets, so force the top level menu to appear on the
+        action bar instead. This suggestion was made at:
+        http://stackoverflow.com/questions/9286822/how-to-force-use-of-overflow-menu-on-devices-with-menu-button -->
+    <item
+        android:id="@+id/menu_overflow"
+        android:icon="@drawable/ic_menu_moreoverflow_normal_holo_light"
+        app:showAsAction="always"
+        android:title="">
+        <menu>
+            <item android:id="@+id/action_show_log"
+                android:title="Log"
+                android:orderInCategory="100"
+                app:showAsAction="never" />
 
-    <item android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+            <item android:id="@+id/action_settings"
+                android:title="@string/action_settings"
+                android:orderInCategory="100"
+                app:showAsAction="never" />
 
-    <item android:id="@+id/about_dialog"
-        android:title="About"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+            <item android:id="@+id/about_dialog"
+                android:title="About"
+                android:orderInCategory="100"
+                app:showAsAction="never" />
 
-    <item android:id="@+id/action_exit"
-        android:title="Exit"
-        app:showAsAction="never" />
+            <item android:id="@+id/action_exit"
+                android:title="Exit"
+                app:showAsAction="never" />
+
+        </menu>
+    </item>
 
 </menu>

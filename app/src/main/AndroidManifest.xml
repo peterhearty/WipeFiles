@@ -21,7 +21,7 @@
         </activity>
         <activity
             android:name="uk.org.platitudes.wipe.preferences.SettingsActivity"
-            android:label="@string/title_activity_petes_settings" >
+            android:label="Wipe File Settings" >
         </activity>
         <activity
             android:name="uk.org.platitudes.wipe.main.DeletionLogActivity"

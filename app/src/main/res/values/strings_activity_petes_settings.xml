@@ -1,6 +1,4 @@
 <resources>
-    <string name="title_activity_petes_settings">Petes Settings</string>
-
     <!-- Strings related to Settings -->
 
     <string-array name="text_size_list_titles">

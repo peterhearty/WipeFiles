@@ -108,7 +108,6 @@ public class MainTabActivity extends ActionBarActivity {
             mActionBar = getSupportActionBar();
             mActionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-
             // Create the adapter that will return a fragment for each of the
             // primary sections of the activity.
 
@@ -121,8 +120,6 @@ public class MainTabActivity extends ActionBarActivity {
             // You supply an implementation of a PagerAdapter to generate the pages that the view shows.
             mViewPager = (ViewPager) findViewById(R.id.pager);
             mViewPager.setAdapter(mSectionsPagerAdapter);
-
-            View content = findViewById(android.R.id.content);
 
             // When swiping between different sections, select the corresponding
             // tab. We can also use ActionBar.Tab#select() to do this if we have
@@ -185,19 +182,6 @@ public class MainTabActivity extends ActionBarActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main_menu, menu);
-
-        // Totally out of place, but a convenient opportunity to set the app title to the
-        // start directory.
-        SelectFilesFragment frag = (SelectFilesFragment) mSectionsPagerAdapter.getItem(0);
-        frag.setAppTitle();
-
-        return true;
-    }
-
-    @Override
     public void onBackPressed() {
         int currentPageshowing = mViewPager.getCurrentItem();
 
@@ -220,14 +204,35 @@ public class MainTabActivity extends ActionBarActivity {
 //        super.onBackPressed();
     }
 
-//    @Override
-//    public boolean onKeyDown(int keyCode, KeyEvent event) {
-//        switch(keyCode) {
-//            case KeyEvent.KEYCODE_MENU:
-//                return true;
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+//        int keyCode = event.getKeyCode();
+//        int action = event.getAction();
+//        boolean isDown = action == 0;
+//
+//        if (keyCode == KeyEvent.KEYCODE_MENU || keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+//            if (isDown) {
+//                return onKeyDown(keyCode, event);
+//            } else {
+//                return onKeyUp(keyCode, event);
+//            }
 //        }
-//        return super.onKeyDown(keyCode, event);
-//    }
+
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        // Totally out of place, but a convenient opportunity to set the app title to the
+        // start directory.
+        SelectFilesFragment frag = (SelectFilesFragment) mSectionsPagerAdapter.getItem(0);
+        frag.setAppTitle();
+
+        return true;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -258,7 +263,7 @@ public class MainTabActivity extends ActionBarActivity {
             // From http://stackoverflow.com/questions/1997328/how-can-i-get-clickable-hyperlinks-in-alertdialog-from-a-string-resource
             final AlertDialog d = new AlertDialog.Builder(this)
                     .setPositiveButton(android.R.string.ok, null)
-                    .setMessage(Html.fromHtml("Wipe Files V0.1<P>" +
+                    .setMessage(Html.fromHtml("Wipe Files V0.2<P>" +
                             "<P>" +
                             "This is free software.<BR>" +
                             "The source is available at<BR>" +
@@ -272,22 +277,15 @@ public class MainTabActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Don't do a process kill - it prevents a screen rotate.
-//    @Override
-//    protected void onDestroy() {
-//        android.os.Process.killProcess(android.os.Process.myPid());
-//        super.onDestroy();
-//    }
-
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    protected void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
         // Used to save dynamic data, e.g. when the screen is turned round.
         // Different from onPause, which gets called when a process is being put in the background
         // and might not come back.
         // "In general onSaveInstanceState(Bundle) is used to save per-instance state in the
         // activity and this method is used to store global persistent data (in content providers, files, etc.)"
-        outState.putStringArrayList("mDeleteLog", mDeleteLog);
+            outState.putStringArrayList("mDeleteLog", mDeleteLog);
     }
 
     @Override
@@ -311,5 +309,4 @@ public class MainTabActivity extends ActionBarActivity {
         startActivity(intent);
 
     }
-
 }
