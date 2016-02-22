@@ -88,6 +88,10 @@ public class ProgressCounter {
         long result = maxValue;
         if (parentCounter != null)
             result = parentCounter.getTotalMax();
+        if (result == 0) {
+            // wiping zero size files can make this zero and cause a divide by zero in getProgressPercent
+            result = 1;
+        }
         return result;
     }
 
