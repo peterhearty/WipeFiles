@@ -261,9 +261,16 @@ public class MainTabActivity extends ActionBarActivity {
 
         if (id == R.id.about_dialog) {
             // From http://stackoverflow.com/questions/1997328/how-can-i-get-clickable-hyperlinks-in-alertdialog-from-a-string-resource
+            String version = "Unknown";
+            try {
+                version = getPackageManager().getPackageInfo(getPackageName(),0).versionName;
+            }
+            catch (Exception e) {
+                mDeleteLog.add("Error fetching version name "+e);
+            }
             final AlertDialog d = new AlertDialog.Builder(this)
                     .setPositiveButton(android.R.string.ok, null)
-                    .setMessage(Html.fromHtml("Wipe Files V0.2<P>" +
+                    .setMessage(Html.fromHtml("Wipe Files version "+version+"<P>" +
                             "<P>" +
                             "This is free software.<BR>" +
                             "The source is available at<BR>" +
